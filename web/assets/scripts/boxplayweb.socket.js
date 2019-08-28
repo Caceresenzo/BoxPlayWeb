@@ -1,21 +1,21 @@
-class BoxPlaySocket {
+class BoxPlayWebSocket {
 
     static initialize() {
-        BoxPlaySocket.socket = null;
-        BoxPlaySocket.connectedCount = 0;
+        BoxPlayWebSocket.socket = null;
+        BoxPlayWebSocket.connectedCount = 0;
 
-        BoxPlaySocket.listeners = [];
-        BoxPlaySocket.subscriptions = [];
+        BoxPlayWebSocket.listeners = [];
+        BoxPlayWebSocket.subscriptions = [];
     }
 
     static connect() {
-        let socket = BoxPlaySocket.socket = new WebSocket("ws://" + WEB_SOCKET_HOST + ":" + WEB_SOCKET_PORT);
+        let socket = BoxPlayWebSocket.socket = new WebSocket("ws://" + WEB_SOCKET_HOST + ":" + WEB_SOCKET_PORT);
 
         socket.onopen = function() {
             console.info("WebSocket: Connected");
 
-            BoxPlaySocket.connectedCount++;
-            BoxPlaySocket.fire("onopen", null);
+            BoxPlayWebSocket.connectedCount++;
+            BoxPlayWebSocket.fire("onopen", null);
         };
 
         socket.onmessage = function(event) {
@@ -27,7 +27,7 @@ class BoxPlaySocket {
             /* Subscribed Callbacks */
             try {
                 let name = json.name;
-                let callbacks = BoxPlaySocket.subscriptions[name];
+                let callbacks = BoxPlayWebSocket.subscriptions[name];
 
                 if (callbacks != undefined) {
                     for (let callback of callbacks) {
@@ -43,14 +43,14 @@ class BoxPlaySocket {
             }
 
             /* Fire registered listeners */
-            BoxPlaySocket.fire("onmessage", json);
+            BoxPlayWebSocket.fire("onmessage", json);
         };
 
         socket.onclose = function(event) {
             console.warn("WebSocket: Closed. Reconnect will be attempted in 1 second.", event.reason);
 
             setTimeout(function() {
-                BoxPlaySocket.connect();
+                BoxPlayWebSocket.connect();
             }, 1000);
         };
 
@@ -58,7 +58,7 @@ class BoxPlaySocket {
             console.error("WebSocket: Encountered error: ", error.message, "Closing socket.");
             socket.close();
 
-            BoxPlaySocket.fire("onerror", error);
+            BoxPlayWebSocket.fire("onerror", error);
         };
     }
 
@@ -73,16 +73,16 @@ class BoxPlaySocket {
 
         let stringify = JSON.stringify(request);
 
-        BoxPlaySocket.socket.send(stringify);
+        BoxPlayWebSocket.socket.send(stringify);
         console.log("WebSocket: Send request: " + stringify);
     }
 
     static listen(event, listener) {
-        let array = BoxPlaySocket.listeners[event];
+        let array = BoxPlayWebSocket.listeners[event];
 
         if (array == undefined) {
             array = [];
-            BoxPlaySocket.listeners[event] = array;
+            BoxPlayWebSocket.listeners[event] = array;
         }
 
         array.push(listener);
@@ -96,11 +96,11 @@ class BoxPlaySocket {
         }
 
         for (let name of names) {
-            let array = BoxPlaySocket.subscriptions[name];
+            let array = BoxPlayWebSocket.subscriptions[name];
 
             if (array == undefined) {
                 array = [];
-                BoxPlaySocket.subscriptions[name] = array;
+                BoxPlayWebSocket.subscriptions[name] = array;
             }
 
             array.push(callback);
@@ -117,7 +117,7 @@ class BoxPlaySocket {
 	 *            data Event's data.
 	 */
     static fire(event, data) {
-        let array = BoxPlaySocket.listeners[event];
+        let array = BoxPlayWebSocket.listeners[event];
 
         if (array != undefined) {
             for (let listener of array) {

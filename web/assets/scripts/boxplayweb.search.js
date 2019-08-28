@@ -1,169 +1,3 @@
-class BoxPlayWeb {
-
-    static initialize() {
-        BoxPlayWeb.token = undefined;
-        BoxPlayWeb.providers = [];
-        BoxPlayWeb.results = [];
-
-        BoxPlaySocket.subscribe(["handshake"], function(name, content) {
-            BoxPlayWeb.token = content.token;
-            console.log("BoxPlayWeb: Got new token: " + content.token);
-
-            BoxPlayWeb.requestProviders();
-        });
-
-        BoxPlaySocket.subscribe(["provider_list"], function(name, content) {
-            BoxPlayWeb.providers = content;
-
-            for (let provider of content) {
-                Object.assign(provider, {
-                    "enabled": true,
-                });
-            }
-
-            console.log("BoxPlayWeb: Got provider list (" + content.length + " item(s))");
-
-            setTimeout(function() {
-                BoxPlayWeb.updateProviderList();
-            }, 500);
-        });
-
-        BoxPlaySocket.subscribe(["search_result"], function(name, content) {
-            let results = [];
-
-            for (let result of content.results) {
-                let newResult = Object.assign({}, result);
-
-                newResult.item = newResult.item.item;
-                newResult["unique_md5"] = md5(newResult.unique);
-                newResult["additional_data"] = {
-                    "informations": [],
-                    "content": []
-                };
-
-                results.push(newResult);
-            }
-
-            BoxPlayWeb.results = results;
-            console.log("BoxPlayWeb: Got result list (" + content.results.length + " item(s))");
-
-            setTimeout(function() {
-                BoxPlayWeb.updateResultList();
-            }, 500);
-        });
-    }
-
-    static reset() {
-        BoxPlayWeb.token = undefined;
-
-        clearVueJsField(mainVue.providers);
-        clearVueJsField(mainVue.results);
-
-        BoxPlayWeb.providers.length = 0;
-        BoxPlayWeb.results.length = 0;
-    }
-
-    static handshake() {
-        BoxPlaySocket.request("handshake", {});
-    }
-
-    static requestProviders() {
-        BoxPlaySocket.request("provider_list", {});
-    }
-
-    static updateProviderList() {
-        clearVueJsField(mainVue.providers);
-
-        for (let provider of BoxPlayWeb.providers) {
-            mainVue.providers.push(provider);
-        }
-    }
-
-    static updateResultList() {
-        clearVueJsField(mainVue.results);
-
-        for (let result of BoxPlayWeb.results) {
-            mainVue.results.push(result);
-        }
-
-        setTimeout(function() {
-            refreshGallery();
-        }, 100);
-    }
-}
-
-class BoxPlayWebConnectPanel {
-
-    static initialize() {
-        BoxPlayWebConnectPanel.modal = undefined;
-
-        BoxPlayWebConnectPanel.steps = [
-            BoxPlayWebConnectPanel.createStep("initialization-step-connect"),
-            BoxPlayWebConnectPanel.createStep("initialization-step-handshake"),
-            BoxPlayWebConnectPanel.createStep("initialization-step-retrieve"),
-        ];
-
-        let openModal = function() {
-            BoxPlayWebConnectPanel.steps.forEach((step) => {
-                step.hide();
-            });
-
-            if (BoxPlayWebConnectPanel.modal == undefined) {
-                BoxPlayWebConnectPanel.modal = $("#modal-initialization").modal({
-                    "dismissible": false,
-                });
-            } else {
-                BoxPlayWeb.reset();
-            }
-            BoxPlayWebConnectPanel.modal.modal("open");
-        }
-        BoxPlaySocket.listen("onerror", openModal);
-        openModal();
-
-        BoxPlaySocket.listen("onopen", function() {
-            BoxPlayWebConnectPanel.steps[0].complete();
-
-            BoxPlayWeb.handshake();
-        });
-
-        BoxPlaySocket.subscribe(["handshake"], function() {
-            if (BoxPlayWeb.token != undefined) {
-                BoxPlayWebConnectPanel.steps[1].complete();
-            }
-        });
-
-        BoxPlaySocket.subscribe(["provider_list"], function() {
-            if (BoxPlayWeb.providers.length != 0) {
-                BoxPlayWebConnectPanel.steps[2].complete();
-            }
-        });
-    }
-
-    static createStep(elementId) {
-        let element = document.getElementById(elementId);
-
-        return {
-            "element": element,
-            "id": elementId,
-            "getCheckmarkElement": function() {
-                return this.element.children[0].children[1];
-            },
-            "hide": function() {
-                this.getCheckmarkElement().style.display = "none";
-            },
-            "complete": function() {
-                this.getCheckmarkElement().style.display = "";
-
-                /* Auto-Close if this step is the last */
-                if (BoxPlayWebConnectPanel.steps.lastIndexOf(this) == BoxPlayWebConnectPanel.steps.length - 1) {
-                    BoxPlayWebConnectPanel.modal.modal("close");
-                }
-            }
-        }
-    }
-
-}
-
 class BoxPlayWebSearch {
 
     static initialize() {
@@ -192,7 +26,7 @@ class BoxPlayWebSearch {
 
         BoxPlayWebSearch.attachEvent();
 
-        BoxPlaySocket.subscribe(["task_progression_notification", "search_starting_soon"], function(name, content) {
+        BoxPlayWebSocket.subscribe(["task_progression_notification", "search_starting_soon"], function(name, content) {
             if (!BoxPlayWebSearch.inSearch) {
                 return;
             }
@@ -359,7 +193,7 @@ class BoxPlayWebSearch {
         steps.forEach((step) => step.hide());
 
         steps[0].complete();
-        BoxPlaySocket.request("search", {
+        BoxPlayWebSocket.request("search", {
             "query": query,
             "providers": providers,
         });
@@ -424,24 +258,6 @@ class BoxPlayWebSearch {
                 }, 200);
             }
         }
-    }
-
-}
-
-class BoxPlayWebAction {
-
-    static initialize() {
-
-    }
-
-    static requestServerCacheClearing() {
-        BoxPlaySocket.request("clear_cache", {});
-    }
-
-    static clearSearchResults() {
-        clearVueJsField(mainVue.results);
-
-        BoxPlayWeb.results.length = 0;
     }
 
 }

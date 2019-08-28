@@ -240,6 +240,55 @@
                             <li id="search-step-request" class="collection-item">
                                 <div>
                                     <span class="translatable" data-i18n="search-step.request.label">?</span>
+                                    <i class="secondary-content material-icons"></i>
+                                </div>
+                            </li>
+                            <li id="search-step-queue" class="collection-item">
+                                <div>
+                                    <span class="translatable" data-i18n="search-step.queue.label">?</span>
+                                    <i class="secondary-content material-icons"></i>
+                                </div>
+                            </li>
+                            <li id="search-step-started" class="collection-item">
+                                <div>
+                                    <span class="translatable" data-i18n="search-step.started.label">?</span>
+                                    <i class="secondary-content material-icons"></i>
+                                </div>
+                            </li>
+                            <div v-for="provider in providers" class="collection-item" v-show="enabledProviders.indexOf(provider.manager) != -1">
+                                <li v-bind:id="'search-step-provider-' + provider.manager.toLowerCase()">
+                                    <div>
+                                        <i class="icon-align material-icons">settings</i>
+                                        <span>{{ provider.site.name }}</span>
+                                        <i class="secondary-content material-icons"></i>
+                                    </div>
+                                </li>
+                            </div>
+                            <li id="search-step-finished" class="collection-item">
+                                <div>
+                                    <span class="translatable" data-i18n="search-step.finished.label">?</span>
+                                    <i class="secondary-content material-icons"></i>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="container center-align">
+                        <h6 class="translatable" data-i18n="initialization-step.please-wait">?</h6>
+                        <div class="progress">
+                            <div class="indeterminate"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="modal-get-content" class="modal scrollbar">
+                <div class="modal-content">
+                    <div class="container">
+                        <ul class="collection with-header">
+                            <li id="search-step-request" class="collection-item">
+                                <div>
+                                    <span class="translatable" data-i18n="search-step.request.label">?</span>
                                     <i class="secondary-content material-icons">check</i>
                                 </div>
                             </li>
@@ -255,15 +304,6 @@
                                     <i class="secondary-content material-icons">check</i>
                                 </div>
                             </li>
-                            <div v-for="provider in providers" class="collection-item" v-show="enabledProviders.indexOf(provider.manager) != -1">
-                                <li v-bind:id="'search-step-provider-' + provider.manager.toLowerCase()">
-                                    <div>
-                                        <i class="icon-align material-icons">settings</i>
-                                        <span>{{ provider.site.name }}</span>
-                                        <i class="secondary-content material-icons">check</i>
-                                    </div>
-                                </li>
-                            </div>
                             <li id="search-step-finished" class="collection-item">
                                 <div>
                                     <span class="translatable" data-i18n="search-step.finished.label">?</span>
@@ -301,9 +341,12 @@
     <script src="assets/scripts/constants.js"></script>
     <script src="assets/scripts/utils.js"></script>
     <script src="assets/scripts/i18n.js"></script>
-    <script src="assets/scripts/boxplayweb.js"></script>
+    <script src="assets/scripts/boxplayweb.main.js"></script>
+    <script src="assets/scripts/boxplayweb.socket.js"></script>
+    <script src="assets/scripts/boxplayweb.search.js"></script>
+    <script src="assets/scripts/boxplayweb.connection-panel.js"></script>
+    <script src="assets/scripts/boxplayweb.action.js"></script>
     <script src="assets/scripts/ui.js"></script>
-    <script src="assets/scripts/exchange.js"></script>
     <script src="assets/scripts/initialize.js"></script>
 </body>
 
