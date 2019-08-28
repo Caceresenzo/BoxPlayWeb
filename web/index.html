@@ -142,7 +142,9 @@
                                         </ul>
                                     </div>
                                     <div v-bind:id="'tab_informations__uid_' + result.unique_md5" class="col s12">
-                                        <p v-if="result.additional_data == undefined" class="description">No data to display.</p>
+                                        <p v-if="result.additional_data.informations.length == 0" class="description center-align">
+                                            No data to display.
+                                        </p>
                                         <p v-else class="description">
                                             <ul v-for="additional in result.additional_data.informations" class="collection with-header">
                                                 <div class="collection-header">
@@ -159,7 +161,9 @@
                                         </p>
                                     </div>
                                     <div v-bind:id="'tab_content__uid_' + result.unique_md5" class="col s12">
-                                        <p v-if="result.additional_data == undefined" class="description">No data to display.</p>
+                                        <p v-if="result.additional_data.content.length == 0" class="description center-align">
+                                            No data to display.
+                                        </p>
                                         <p v-else class="description">
                                             <ul v-for="additional in result.additional_data.content" class="collection with-header">
                                                 <div class="collection-header">
@@ -251,8 +255,8 @@
                                     <i class="secondary-content material-icons">check</i>
                                 </div>
                             </li>
-                            <div v-for="provider in providers" class="collection-item">
-                                <li v-if="enabledProviders.indexOf(provider.manager) != -1" v-bind:id="'search-step-provider-' + provider.manager.toLowerCase()">
+                            <div v-for="provider in providers" class="collection-item" v-show="enabledProviders.indexOf(provider.manager) != -1">
+                                <li v-bind:id="'search-step-provider-' + provider.manager.toLowerCase()">
                                     <div>
                                         <i class="icon-align material-icons">settings</i>
                                         <span>{{ provider.site.name }}</span>

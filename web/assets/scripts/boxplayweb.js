@@ -234,8 +234,32 @@ class BoxPlayWebSearch {
                             case "WORKING":
                                 {
                                     if (message != undefined && message.from == "PROVIDER") {
-                                        console.log("search-step-provider-" + message.manager.toLowerCase());
-                                        step = findStep("providers", "search-step-provider-" + message.manager.toLowerCase());
+                                        let submessage = message.submessage;
+
+                                        let localStep = findStep("providers", "search-step-provider-" + message.manager.toLowerCase());
+
+                                        if (submessage != undefined) {
+                                            let error = submessage.error;
+                                            let eta = submessage.eta;
+
+                                            if (error == undefined) {
+                                                switch (eta) {
+                                                    case "provider.search.finished":
+                                                        {
+                                                            localStep.changeIcon("done");
+                                                            break;
+                                                        }
+                                                    case "provider.search.start":
+                                                    case "provider.search.sorting":
+                                                        {
+                                                            localStep.changeIcon("current");
+                                                            break;
+                                                        }
+                                                }
+                                            } else {
+                                                localStep.changeIcon("error");
+                                            }
+                                        }
                                     }
                                     break;
                                 }
@@ -246,7 +270,7 @@ class BoxPlayWebSearch {
                                     delay = 1500;
 
                                     setTimeout(function() {
-                                    	 i18n.applyOn(document);
+                                        i18n.applyOn(document);
                                     }, 500);
                                     break;
                                 }
@@ -257,7 +281,7 @@ class BoxPlayWebSearch {
 
             if (step != undefined) {
                 setTimeout(function() {
-                	step.complete();
+                    step.complete();
                 }, delay);
             }
         });
@@ -362,20 +386,42 @@ class BoxPlayWebSearch {
         return {
             "element": element,
             "id": elementId,
+            "visible": true,
             "getCheckmarkElement": function() {
                 return this.element.children[0].children[elementOffset];
             },
+            "icons": {
+                "current": "sync",
+                "done": "check",
+                "error": "close",
+            },
             "hide": function() {
+                this.visible = false;
+
                 this.getCheckmarkElement().style.display = "none";
             },
-            "complete": function() {
+            "changeIcon": function(icon) {
+                if (!this.visible) {
+                    this.show();
+                }
+
+                this.getCheckmarkElement().innerText = this.icons[icon];
+            },
+            "show": function() {
+                this.visible = true;
+
                 this.getCheckmarkElement().style.display = "";
+            },
+            "complete": function() {
+                this.changeIcon("done");
 
                 /* Auto-Close if this step is the last */
-                if (last) {
-                    BoxPlayWebSearch.modal.modal("close");
-                    BoxPlayWebSearch.inSearch = false;
-                }
+                setTimeout(function() {
+                    if (last) {
+                        BoxPlayWebSearch.modal.modal("close");
+                        BoxPlayWebSearch.inSearch = false;
+                    }
+                }, 200);
             }
         }
     }
