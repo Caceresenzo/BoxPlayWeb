@@ -65,11 +65,10 @@ public class SearchSearchAndGoTask extends AbstractSearchAndGoTask {
 			JsonObject errorJsonObject = new JsonObject();
 			JsonObject detailJsonObject = new JsonObject();
 			
-			errorJsonObject.put("error", errorJsonObject);
-			detailJsonObject.put("on", provider.getSourceManager());
+			errorJsonObject.put("error", detailJsonObject);
 			detailJsonObject.put("cause", exception.getMessage());
 			
-			notifyWorkingProgression(createGlobalSearchMessage(errorJsonObject));
+			notifyWorkingProgression(createProviderSearchMessage(provider, errorJsonObject));
 		}
 		
 		@Override
@@ -92,7 +91,7 @@ public class SearchSearchAndGoTask extends AbstractSearchAndGoTask {
 			JsonObject errorJsonObject = new JsonObject();
 			JsonObject detailJsonObject = new JsonObject();
 			
-			errorJsonObject.put("error", errorJsonObject);
+			errorJsonObject.put("error", detailJsonObject);
 			detailJsonObject.put("on", null);
 			detailJsonObject.put("cause", exception.getMessage());
 			
