@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Gallery</title>
+
+    <!-- Lato Font -->
+    <link rel="stylesheet" type="text/css" href='http://fonts.googleapis.com/css?family=Lato:300,400,700'>
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="assets/libraries/materializecss/gallery-materialize.min.css">
+    <link rel="stylesheet" href="assets/styles/main.css">
+    <link rel="stylesheet" href="assets/styles/scrollbar.css">
+
+    <!-- Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+
+<body class="scrollbar">
+    <!-- Navbar and Header -->
+    <nav class="nav-extended red z-depth-0 blue-grey darken-3">
+        <div class="nav-background">
+            <img class="active" src="http://placehold.it/1400x400" alt="cityscape">
+        </div>
+        <div class="nav-wrapper container">
+            <a href="index.html" class="brand-logo">
+                <i class="material-icons">camera</i> Search n' Go
+            </a>
+        </div>
+    </nav>
+
+    <!-- Gallery -->
+    <div id="main" class="section gray">
+        <div class="container">
+            <div class="gallery row">
+                <div class="col m12 s12 polygon">
+                    <ul class="collection with-header">
+                        <div class="collection-header">
+                            <i class="icon-align material-icons">warning</i>
+                            <strong class="translatable" data-i18n="warning.header">?</strong>
+                        </div>
+                        <div class="collection-item row center-align">
+                            <h5 style="color: red;" class="translatable" data-i18n="warning.message.not-complete">?</h5>
+                        </div>
+                    </ul>
+                </div>
+                <div class="col m12 s12 polygon">
+                    <ul class="collection with-header">
+                        <div class="collection-item row">
+                            <div class="input-field col s6 offset-s3">
+                                <form id="form-search">
+                                    <i class="material-icons prefix">search</i>
+                                    <input id="input-search" type="text" class="validate">
+                                    <label for="input-search" class="translatable" data-i18n="search.label">?</label>
+                                </form>
+                            </div>
+                        </div>
+                    </ul>
+                </div>
+                <div class="col m12 s12 polygon">
+                    <ul class="collection with-header">
+                        <div class="collection-header">
+                            <i class="icon-align material-icons">settings</i>
+                            <strong class="translatable" data-i18n="settings.header">?</strong>
+                        </div>
+                        <div class="collection-item row" style="padding: 10px 20px;">
+                            <ul class="col s6 m12 collection with-header setting-block">
+                                <li class="collection-header">
+                                    <h5 class="translatable" data-i18n="settings.providers.header">?</h5>
+                                </li>
+                                <li v-for="provider in providers" :key="provider.id" class="collection-item">
+                                    <div>
+                                        {{ provider.site.name }}
+                                        <a v-bind:href="provider.site.url" target="_blank" rel="noopener noreferrer" style="padding-left: 8px" class="secondary-content">
+                                            <i class="material-icons">open_in_new</i>
+                                        </a>
+                                        <div class="switch secondary-content">
+                                            <label>
+												<input type="checkbox" v-bind:value="provider.manager" v-model="enabledProviders">
+												<span class="lever"></span>
+											</label>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <ul class="col s6 m12 collection with-header setting-block">
+                                <li class="collection-header">
+                                    <h5 class="translatable" data-i18n="settings.language.header">?</h5>
+                                </li>
+                                <li class="collection-item">
+                                    <form action="#">
+                                        <p v-for="language in languages">
+                                            <input v-bind:id="'language-' + language.code" name="radio-group-language" type="radio" v-bind:value="language.code" v-model="selectedLanguage" />
+                                            <label v-bind:for="'language-' + language.code">{{ language.name }}</label>
+                                        </p>
+                                    </form>
+                                </li>
+                            </ul>
+                            <ul class="col s6 m12 collection with-header setting-block">
+                                <li class="collection-header">
+                                    <h5 class="translatable" data-i18n="settings.actions.header">?</h5>
+                                </li>
+                                <li class="collection-item button-item">
+                                    <a onclick="BoxPlayWebAction.requestServerCacheClearing();" class="translatable waves-effect waves-light btn" data-i18n="settings.actions.clear-server-cache">?</a>
+                                </li>
+                                <li class="collection-item button-item">
+                                    <a onclick="BoxPlayWebAction.clearSearchResults();" class="translatable waves-effect waves-light btn" data-i18n="settings.actions.clear-search-results">?</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </ul>
+                </div>
+                <div v-if="results.length != 0">
+                    <div v-for="result in results" class="col m12 s12 gallery-item gallery-horizontal gallery-expand polygon">
+                        <div class="gallery-curve-wrapper">
+                            <a class="gallery-cover gray result-cover-container">
+                                <header v-bind:style="{ backgroundImage: 'url(' + result.item.image_url + ')' }" class="card-result-picture"></header>
+                            </a>
+                            <div class="gallery-header">
+                                <h4>{{ result.item.name }}</h4>
+                                <p>{{ result.item.description }}</p>
+                            </div>
+                            <div class="gallery-body">
+                                <div class="title-wrapper">
+                                    <h3>{{ result.item.name }}</h3>
+                                    <span class="price">{{ result.item.type }}</span>
+                                </div>
+                                <div class="row">
+                                    <div class="col s12">
+                                        <ul class="tabs">
+                                            <li class="tab col s6">
+                                                <a v-bind:href="'#tab_informations__uid_' + result.unique_md5" class="active translatable" data-i18n="result.tabs.informations.label">?</a>
+                                            </li>
+                                            <li class="tab col s6">
+                                                <a v-bind:href="'#tab_content__uid_' + result.unique_md5" class="translatable" data-i18n="result.tabs.content.label">?</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div v-bind:id="'tab_informations__uid_' + result.unique_md5" class="col s12">
+                                        <p v-if="result.additional_data == undefined" class="description">No data to display.</p>
+                                        <p v-else class="description">
+                                            <ul v-for="additional in result.additional_data.informations" class="collection with-header">
+                                                <div class="collection-header">
+                                                    <i class="icon-align material-icons">info</i>
+                                                    <strong> {{ translations[additional.type] }} </strong>
+                                                </div>
+                                                <div class="collection-item">
+                                                    <div v-if="additional.type == 'GENDERS'">
+                                                        <div v-for="gender in additional.value" class="chip">{{ gender.name }}</div>
+                                                    </div>
+                                                    <span v-else>{{ additional.value }}</span>
+                                                </div>
+                                            </ul>
+                                        </p>
+                                    </div>
+                                    <div v-bind:id="'tab_content__uid_' + result.unique_md5" class="col s12">
+                                        <p v-if="result.additional_data == undefined" class="description">No data to display.</p>
+                                        <p v-else class="description">
+                                            <ul v-for="additional in result.additional_data.content" class="collection with-header">
+                                                <div class="collection-header">
+                                                    <i v-if="additional.type == 'ITEM_VIDEO'" class="icon-align material-icons">video_library</i>
+                                                    <i v-else-if="additional.type == 'ITEM_CHAPTER'" class="icon-align material-icons">library_books</i>
+                                                    <i v-else class="icon-align material-icons">error</i>
+                                                    <strong> {{ translations[additional.type] }} </strong>
+                                                </div>
+                                                <div class="collection-item row">
+                                                    <a class="col s6 btn-flat disabled">
+                                                        <span style="color: black;">{{ additional.value.name }}</span>
+                                                    </a>
+                                                    <a v-if="additional.value.url != undefined" class="col s4 offset-s2 waves-effect waves-light btn no-shadow">WATCH</a>
+                                                </div>
+                                            </ul>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gallery-action">
+                                <a class="btn-floating btn-large waves-effect waves-light">
+                                    <i class="material-icons">favorite</i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-else class="col m12 s12 polygon">
+                    <ul class="collection with-header">
+                        <div class="collection-item row">
+                            <h5>No Content</h5>
+                        </div>
+                    </ul>
+                </div>
+            </div>
+            <div id="modal-initialization" class="modal scrollbar">
+                <div class="modal-content">
+                    <div class="container">
+                        <ul class="collection with-header">
+                            <li id="initialization-step-connect" class="collection-item">
+                                <div>
+                                    <span class="translatable" data-i18n="initialization-step.connect.label">?</span>
+                                    <i class="secondary-content material-icons">check</i>
+                                </div>
+                            </li>
+                            <li id="initialization-step-handshake" class="collection-item">
+                                <div>
+                                    <span class="translatable" data-i18n="initialization-step.handshake.label">?</span>
+                                    <i class="secondary-content material-icons">check</i>
+                                </div>
+                            </li>
+                            <li id="initialization-step-retrieve" class="collection-item">
+                                <div>
+                                    <span class="translatable" data-i18n="initialization-step.retrieve.label">?</span>
+                                    <i class="secondary-content material-icons">check</i>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="container center-align">
+                        <h6 class="translatable" data-i18n="initialization-step.please-wait">?</h6>
+                        <div class="progress">
+                            <div class="indeterminate"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="modal-search" class="modal scrollbar">
+                <div class="modal-content">
+                    <div class="container">
+                        <ul class="collection with-header">
+                            <li id="search-step-request" class="collection-item">
+                                <div>
+                                    <span class="translatable" data-i18n="search-step.request.label">?</span>
+                                    <i class="secondary-content material-icons">check</i>
+                                </div>
+                            </li>
+                            <li id="search-step-queue" class="collection-item">
+                                <div>
+                                    <span class="translatable" data-i18n="search-step.queue.label">?</span>
+                                    <i class="secondary-content material-icons">check</i>
+                                </div>
+                            </li>
+                            <li id="search-step-started" class="collection-item">
+                                <div>
+                                    <span class="translatable" data-i18n="search-step.started.label">?</span>
+                                    <i class="secondary-content material-icons">check</i>
+                                </div>
+                            </li>
+                            <div v-for="provider in providers" class="collection-item">
+                                <li v-if="enabledProviders.indexOf(provider.manager) != -1" v-bind:id="'search-step-provider-' + provider.manager.toLowerCase()">
+                                    <div>
+                                        <i class="icon-align material-icons">settings</i>
+                                        <span>{{ provider.site.name }}</span>
+                                        <i class="secondary-content material-icons">check</i>
+                                    </div>
+                                </li>
+                            </div>
+                            <li id="search-step-finished" class="collection-item">
+                                <div>
+                                    <span class="translatable" data-i18n="search-step.finished.label">?</span>
+                                    <i class="secondary-content material-icons">check</i>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="container center-align">
+                        <h6 class="translatable" data-i18n="initialization-step.please-wait">?</h6>
+                        <div class="progress">
+                            <div class="indeterminate"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+
+    <!-- Main Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="assets/libraries/js-cookie/js.cookie.min.js"></script>
+    <script src="assets/libraries/blueimp-md5/md5.min.js"></script>
+
+    <!-- UI Libraries -->
+    <script src="https://cdn.jsdelivr.net/materialize/0.98.0/js/materialize.min.js"></script>
+    <script src="assets/libraries/materializecss/color-thief.min.js"></script>
+    <script src="assets/libraries/materializecss/galleryExpand.js"></script>
+
+    <!-- BoxPlay Libraries -->
+    <script src="assets/scripts/constants.js"></script>
+    <script src="assets/scripts/utils.js"></script>
+    <script src="assets/scripts/i18n.js"></script>
+    <script src="assets/scripts/boxplayweb.js"></script>
+    <script src="assets/scripts/ui.js"></script>
+    <script src="assets/scripts/exchange.js"></script>
+    <script src="assets/scripts/initialize.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,6 @@
+const REMOTE_URL = "192.168.1.10";
+
+const WEB_SOCKET_HOST = REMOTE_URL;
+const WEB_SOCKET_PORT = "8134";
+
+const LANGUAGE_DEFAULT = "en";
