@@ -1,8 +1,10 @@
 class BoxPlayWebSearch {
 
     static initialize() {
-        BoxPlayWebSearch.modal = undefined;
-        BoxPlayWebSearch.inSearch = false;
+        BoxPlayWebSearch.MODALS = {
+            "SEARCH": new BoxPlayWebModal("modal-search"),
+            "GET_ADDITIONAL": new BoxPlayWebModal("modal-get-additional"),
+        };
 
         BoxPlayWebSearch.DIVS = {
             "FORM": document.getElementById("form-search"),
@@ -12,27 +14,37 @@ class BoxPlayWebSearch {
             "QUERY": document.getElementById("input-search"),
         }
 
-        BoxPlayWebSearch.steps = {
-            "head": [
-                BoxPlayWebSearch.createStep("search-step-request"),
-                BoxPlayWebSearch.createStep("search-step-queue"),
-                BoxPlayWebSearch.createStep("search-step-started"),
-            ],
-            "providers": [],
-            "tail": [
-                BoxPlayWebSearch.createStep("search-step-finished", 1, true),
+        BoxPlayWebSearch.STEPS = {
+            "SEARCH": {
+                "HEAD": [
+                    BoxPlayWebSearch.createSearchStep("search-step-request"),
+                    BoxPlayWebSearch.createSearchStep("search-step-queue"),
+                    BoxPlayWebSearch.createSearchStep("search-step-started"),
+                ],
+                "PROVIDERS": [],
+                "TAIL": [
+                    BoxPlayWebSearch.createSearchStep("search-step-finished", 1, BoxPlayWebSearch.MODALS.SEARCH),
+                ]
+            },
+            "GET_ADDITIONAL": [
+                BoxPlayWebSearch.createSearchStep("get-additional-step-request"),
+                BoxPlayWebSearch.createSearchStep("get-additional-step-queue"),
+                BoxPlayWebSearch.createSearchStep("get-additional-step-started"),
+                BoxPlayWebSearch.createSearchStep("get-additional-step-informations"),
+                BoxPlayWebSearch.createSearchStep("get-additional-step-content"),
+                BoxPlayWebSearch.createSearchStep("get-additional-step-finished", 1, BoxPlayWebSearch.MODALS.GET_ADDITIONAL),
             ]
         }
 
         BoxPlayWebSearch.attachEvent();
 
         BoxPlayWebSocket.subscribe(["task_progression_notification", "task_enqueued"], function(name, content) {
-            if (!BoxPlayWebSearch.inSearch) {
+            if (!BoxPlayWebSearch.MODALS.SEARCH.isOpen()) {
                 return;
             }
 
             let findStep = function(from, id) {
-                let array = BoxPlayWebSearch.steps[from];
+                let array = BoxPlayWebSearch.STEPS.SEARCH[from];
 
                 for (let step of array) {
                     if (id == step.id) {
@@ -48,7 +60,7 @@ class BoxPlayWebSearch {
             switch (name) {
                 case "task_enqueued":
                     {
-                        step = findStep("head", "search-step-queue");
+                        step = findStep("HEAD", "search-step-queue");
                         break;
                     }
 
@@ -61,7 +73,7 @@ class BoxPlayWebSearch {
                         switch (progression) {
                             case "START":
                                 {
-                                    step = findStep("head", "search-step-started");
+                                    step = findStep("HEAD", "search-step-started");
                                     break;
                                 }
 
@@ -69,8 +81,7 @@ class BoxPlayWebSearch {
                                 {
                                     if (message != undefined && message.from == "PROVIDER") {
                                         let submessage = message.submessage;
-
-                                        let localStep = findStep("providers", "search-step-provider-" + message.manager.toLowerCase());
+                                        let localStep = findStep("PROVIDERS", "search-step-provider-" + message.manager.toLowerCase());
 
                                         if (submessage != undefined) {
                                             let error = submessage.error;
@@ -100,12 +111,96 @@ class BoxPlayWebSearch {
 
                             case "FINISHED":
                                 {
-                                    step = findStep("tail", "search-step-finished");
-                                    delay = 1500;
+                                    step = findStep("TAIL", "search-step-finished");
+                                    delay = 100;
 
                                     setTimeout(function() {
                                         i18n.applyOn(document);
-                                    }, 500);
+                                    }, 300);
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+            }
+
+            if (step != undefined) {
+                setTimeout(function() {
+                    step.complete();
+                }, delay);
+            }
+        });
+
+        BoxPlayWebSocket.subscribe(["task_progression_notification", "task_enqueued"], function(name, content) {
+            if (!BoxPlayWebSearch.MODALS.GET_ADDITIONAL.isOpen()) {
+                return;
+            }
+
+            let findStep = function(id) {
+                let array = BoxPlayWebSearch.STEPS.GET_ADDITIONAL;
+
+                for (let step of array) {
+                    if (id == step.id) {
+                        return step;
+                    }
+                }
+
+                return undefined;
+            }
+
+            let step = undefined;
+            let delay = 0;
+            switch (name) {
+                case "task_enqueued":
+                    {
+                        step = findStep("get-additional-step-queue");
+                        break;
+                    }
+
+                case "task_progression_notification":
+                    {
+                        let task = content.task;
+                        let progression = content.progression;
+                        let message = content.message;
+
+                        switch (progression) {
+                            case "START":
+                                {
+                                    step = findStep("get-additional-step-started");
+                                    break;
+                                }
+
+                            case "WORKING":
+                                {
+                                    if (message != null) {
+                                        let current = message.current;
+                                        let eta = message.eta;
+
+                                        if (current != null) {
+                                            let localStep = findStep("get-additional-step-" + current.toLowerCase());
+
+                                            if (localStep != null) {
+                                                let etaMap = {
+                                                    "STARTED": "current",
+                                                    "FINISHED": "done",
+                                                    "FAILED": "error",
+                                                }
+
+                                                localStep.changeIcon(etaMap[eta]);
+                                            }
+                                        }
+                                    }
+                                    break;
+                                }
+
+                            case "FINISHED":
+                                {
+                                    step = findStep("get-additional-step-finished");
+                                    delay = 100;
+
+                                    setTimeout(function() {
+                                        i18n.applyOn(document);
+                                    }, 300);
                                     break;
                                 }
                         }
@@ -139,10 +234,6 @@ class BoxPlayWebSearch {
         }
     }
 
-    static reset() {
-
-    }
-
     static getEnabledProvidersFromCookies() {
         let enabledProviders = [];
         let cookieEnabledProvider = Cookies.get("enabled-provider");
@@ -170,22 +261,13 @@ class BoxPlayWebSearch {
             return;
         }
 
-        BoxPlayWebSearch.inSearch = true;
-
-        if (BoxPlayWebSearch.modal == undefined) {
-            BoxPlayWebSearch.modal = $("#modal-search").modal({
-                "dismissible": false,
-            });
-        } else {
-            BoxPlayWebSearch.reset();
-        }
-        BoxPlayWebSearch.modal.modal("open");
+        BoxPlayWebSearch.MODALS.SEARCH.open();
 
         BoxPlayWebSearch.createProviderSteps();
 
         let steps = [];
-        for (let map in BoxPlayWebSearch.steps) {
-            for (let step of BoxPlayWebSearch.steps[map]) {
+        for (let map in BoxPlayWebSearch.STEPS.SEARCH) {
+            for (let step of BoxPlayWebSearch.STEPS.SEARCH[map]) {
                 steps.push(step);
             }
         }
@@ -197,9 +279,6 @@ class BoxPlayWebSearch {
             "query": query,
             "providers": providers,
         });
-        /*
-         * let index = 0; for (let step of steps) { step.hide(); setTimeout(function() { step.complete(); }, 1000 * index) index++; }
-         */
     }
 
     static createProviderSteps() {
@@ -207,14 +286,14 @@ class BoxPlayWebSearch {
 
         for (let provider of mainVue.providers) {
             if (mainVue.enabledProviders.indexOf(provider.manager) != -1) {
-                steps.push(BoxPlayWebSearch.createStep("search-step-provider-" + provider.manager.toLowerCase(), 2));
+                steps.push(BoxPlayWebSearch.createSearchStep("search-step-provider-" + provider.manager.toLowerCase(), 2));
             }
         }
 
-        BoxPlayWebSearch.steps.providers = steps;
+        BoxPlayWebSearch.STEPS.SEARCH.PROVIDERS = steps;
     }
 
-    static createStep(elementId, elementOffset = 1, last = false) {
+    static createSearchStep(elementId, elementOffset = 1, modal) {
         let element = document.getElementById(elementId);
 
         return {
@@ -250,12 +329,9 @@ class BoxPlayWebSearch {
                 this.changeIcon("done");
 
                 /* Auto-Close if this step is the last */
-                setTimeout(function() {
-                    if (last) {
-                        BoxPlayWebSearch.modal.modal("close");
-                        BoxPlayWebSearch.inSearch = false;
-                    }
-                }, 200);
+                if (modal) {
+                    modal.close();
+                }
             }
         }
     }
@@ -274,6 +350,12 @@ class BoxPlayWebSearch {
             console.warn("BoxPlayWebSearch: No match for result with md5: " + md5);
             return;
         }
+
+        BoxPlayWebSearch.MODALS.GET_ADDITIONAL.open();
+
+        let steps = BoxPlayWebSearch.STEPS.GET_ADDITIONAL;
+        steps.forEach((step) => step.hide());
+        steps[0].complete();
 
         BoxPlayWebSocket.request("get_additional", {
             "object": corresponding.object,

@@ -34,10 +34,12 @@ class i18n {
         english.set("initialization-step.connect.label", "Connecting");
         english.set("initialization-step.handshake.label", "Identifying");
         english.set("initialization-step.retrieve.label", "Getting base data");
-        english.set("search-step.request.label", "Request");
-        english.set("search-step.queue.label", "Queue");
-        english.set("search-step.started.label", "Started");
-        english.set("search-step.finished.label", "Finished");
+        english.set("generic-step.request.label", "Request");
+        english.set("generic-step.queue.label", "Queue");
+        english.set("generic-step.started.label", "Started");
+        english.set("generic-step.finished.label", "Finished");
+        english.set("get-additional-step.informations.label", "Informations");
+        english.set("get-additional-step.content.label", "Content");
         english.set("gallery.button.back", "Back");
 
         english.set("result.type.thumbnail", "Thumbnail");
@@ -91,10 +93,12 @@ class i18n {
         french.set("initialization-step.connect.label", "Connection");
         french.set("initialization-step.handshake.label", "Identification");
         french.set("initialization-step.retrieve.label", "Récupération de données de base");
-        french.set("search-step.request.label", "Requête");
-        french.set("search-step.queue.label", "File d'attente");
-        french.set("search-step.started.label", "Démarré");
-        french.set("search-step.finished.label", "Terminé");
+        french.set("generic-step.request.label", "Requête");
+        french.set("generic-step.queue.label", "File d'attente");
+        french.set("generic-step.started.label", "Démarré");
+        french.set("generic-step.finished.label", "Terminé");
+        french.set("get-additional-step.informations.label", "Informations");
+        french.set("get-additional-step.content.label", "Contenu");
         french.set("gallery.button.back", "Retour");
 
         french.set("result.type.thumbnail", "Mignature");
@@ -112,7 +116,7 @@ class i18n {
         french.set("result.type.status", "Status");
         french.set("result.type.country", "Pays");
         french.set("result.type.director", "Directeur");
-        french.set("result.type.authors", "Autheurs");
+        french.set("result.type.authors", "Auteurs");
         french.set("result.type.actors", "Acteurs");
         french.set("result.type.artists", "Artistes");
         french.set("result.type.studios", "Studios");

@@ -56,3 +56,7 @@ a:active {
 .checked-star {
     color: orange;
 }
+
+.tabs {
+    overflow-x: hidden;
+}
