@@ -40,6 +40,40 @@ class i18n {
         english.set("search-step.finished.label", "Finished");
         english.set("gallery.button.back", "Back");
 
+        english.set("result.type.thumbnail", "Thumbnail");
+        english.set("result.type.name", "Name");
+        english.set("result.type.original_name", "Original Name");
+        english.set("result.type.alternative_name", "Alternative Name");
+        english.set("result.type.other_name", "Other Name");
+        english.set("result.type.type", "Type");
+        english.set("result.type.quality", "Quality");
+        english.set("result.type.version", "Version");
+        english.set("result.type.rank", "Rank");
+        english.set("result.type.traduction_team", "Traduction Team");
+        english.set("result.type.genders", "Genders");
+        english.set("result.type.last_chapter", "Last Chapter");
+        english.set("result.type.status", "Status");
+        english.set("result.type.country", "Country");
+        english.set("result.type.director", "Director");
+        english.set("result.type.authors", "Authors");
+        english.set("result.type.actors", "Actors");
+        english.set("result.type.artists", "Artists");
+        english.set("result.type.studios", "Studios");
+        english.set("result.type.channels", "Channels");
+        english.set("result.type.last_updated", "Last Updated");
+        english.set("result.type.release_date", "Release Date");
+        english.set("result.type.animation_studio", "Animation Studio");
+        english.set("result.type.publishers", "Publisher");
+        english.set("result.type.views", "Views");
+        english.set("result.type.duration", "Duration");
+        english.set("result.type.under_license", "Under License");
+        english.set("result.type.resume", "Resume");
+        english.set("result.type.rating", "Rating");
+        english.set("result.type.simple_html", "Unprocessed");
+        english.set("result.type.item_video", "Video");
+        english.set("result.type.item_chapter", "Chapter");
+        english.set("result.type.null", "Unknown");
+
         let french = i18n.registerLanguage("fr", "Français");
         french.set("date.at", "à");
         french.set("warning.header", "Attention");
@@ -62,6 +96,40 @@ class i18n {
         french.set("search-step.started.label", "Démarré");
         french.set("search-step.finished.label", "Terminé");
         french.set("gallery.button.back", "Retour");
+
+        french.set("result.type.thumbnail", "Mignature");
+        french.set("result.type.name", "Nom");
+        french.set("result.type.original_name", "Nom Original");
+        french.set("result.type.alternative_name", "Nom Alternatif");
+        french.set("result.type.other_name", "Autre Nom");
+        french.set("result.type.type", "Type");
+        french.set("result.type.quality", "Qualité");
+        french.set("result.type.version", "Version");
+        french.set("result.type.rank", "Rank");
+        french.set("result.type.traduction_team", "é".toUpperCase() + "quipe de Traduction");
+        french.set("result.type.genders", "Catégories");
+        french.set("result.type.last_chapter", "Dernier Chapitre");
+        french.set("result.type.status", "Status");
+        french.set("result.type.country", "Pays");
+        french.set("result.type.director", "Directeur");
+        french.set("result.type.authors", "Autheurs");
+        french.set("result.type.actors", "Acteurs");
+        french.set("result.type.artists", "Artistes");
+        french.set("result.type.studios", "Studios");
+        french.set("result.type.channels", "Chaines");
+        french.set("result.type.last_updated", "Dernière Mise à Jour");
+        french.set("result.type.release_date", "Date de Sortie");
+        french.set("result.type.animation_studio", "Studio d'Animation");
+        french.set("result.type.publishers", "Publicateur");
+        french.set("result.type.views", "Nombre de Vues");
+        french.set("result.type.duration", "Durée");
+        french.set("result.type.under_license", "Sous Licence");
+        french.set("result.type.resume", "Synopsis");
+        french.set("result.type.rating", "Note");
+        french.set("result.type.simple_html", "Non Traité");
+        french.set("result.type.item_video", "Vidéo");
+        french.set("result.type.item_chapter", "Chapitre");
+        french.set("result.type.null", "Inconnu");
     }
 
     static prepareSettingsSection() {

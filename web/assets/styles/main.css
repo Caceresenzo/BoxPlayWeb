@@ -52,3 +52,7 @@ a:active {
 .no-shadow {
     box-shadow: none;
 }
+
+.checked-star {
+    color: orange;
+}

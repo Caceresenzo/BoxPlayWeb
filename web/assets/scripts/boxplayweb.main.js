@@ -25,7 +25,7 @@ class BoxPlayWeb {
 
             setTimeout(function() {
                 BoxPlayWeb.updateProviderList();
-            }, 500);
+            }, 100);
         });
 
         BoxPlayWebSocket.subscribe(["search_result"], function(name, content) {
@@ -34,7 +34,6 @@ class BoxPlayWeb {
             for (let result of content.results) {
                 let newResult = Object.assign({}, result);
 
-                newResult.item = newResult.item.item;
                 newResult["unique_md5"] = md5(newResult.unique);
                 newResult["additional_data"] = {
                     "informations": [],
@@ -49,7 +48,61 @@ class BoxPlayWeb {
 
             setTimeout(function() {
                 BoxPlayWeb.updateResultList();
-            }, 500);
+            }, 100);
+        });
+
+        BoxPlayWebSocket.subscribe(["additional_data"], function(name, content) {
+            let equal = function(a, b, field) {
+                return a[field] == b[field];
+            }
+            let match = function(item, original) {
+                if (item.kind != original.kind) {
+                    return false;
+                }
+
+                let a = item.item,
+                    b = original.item;
+
+                if (equal(a, b, "parent_provider") && equal(a, b, "name") && equal(a, b, "image_url") && equal(a, b, "url") && equal(a, b, "type")) {
+                    return true;
+                }
+                return false;
+            }
+
+            let original = content.original;
+            let corresponding = undefined;
+            for (let item of mainVue.results) {
+                if (match(item.object, original)) {
+                    corresponding = item;
+                    break;
+                }
+            }
+
+            if (!corresponding) {
+                console.warn("BoxPlayWeb: No corresponding item found for original item with url: " + original.item.url);
+                return;
+            }
+
+            let copy = function(from, to) {
+                let length = to.length;
+                for (let index = 0; index < length; index++) {
+                    to.pop();
+                }
+
+                for (let item of from) {
+                    to.push(item);
+                }
+            }
+
+            let fields = ["informations", "content"];
+            for (let field of fields) {
+                copy(content[field], corresponding.additional_data[field]);
+            }
+
+            setTimeout(function() {
+                i18n.applyOn(document);
+                RatingStar.applyOnAll();
+            }, 100);
         });
     }
 

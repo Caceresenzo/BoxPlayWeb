@@ -8,7 +8,7 @@ import org.java_websocket.WebSocket;
 import caceresenzo.apps.boxplayweb.client.Client;
 import caceresenzo.apps.boxplayweb.exchange.AbstractRequestProcessor;
 import caceresenzo.apps.boxplayweb.exchange.AbstractResponse;
-import caceresenzo.apps.boxplayweb.exchange.implementations.responses.SearchStartingSoonResponse;
+import caceresenzo.apps.boxplayweb.exchange.implementations.responses.TaskEnqueuedResponse;
 import caceresenzo.apps.boxplayweb.exchange.implementations.responses.errors.FailedRequestErrorResponse;
 import caceresenzo.apps.boxplayweb.searchandgo.SearchAndGoTaskExecutor;
 import caceresenzo.apps.boxplayweb.searchandgo.tasks.implementations.SearchSearchAndGoTask;
@@ -56,7 +56,7 @@ public class SearchRequestProcessor extends AbstractRequestProcessor {
 		
 		SearchAndGoTaskExecutor.get().execute(new SearchSearchAndGoTask(client, query, providers));
 		
-		return new SearchStartingSoonResponse();
+		return new TaskEnqueuedResponse();
 	}
 	
 }

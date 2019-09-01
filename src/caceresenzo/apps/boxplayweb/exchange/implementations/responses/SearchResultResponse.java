@@ -19,10 +19,15 @@ public class SearchResultResponse extends AbstractResponse {
 	public static final String JSON_KEY_RESULTS = "results";
 	public static final String JSON_KEY_ITEM_KEY = "unique";
 	public static final String JSON_KEY_ITEM_SCORE = "score";
-	public static final String JSON_KEY_ITEM_ITEM = "item";
+	public static final String JSON_KEY_ITEM_OBJECT = "object";
 	
 	/* Constants */
 	public static final String NAME = "search_result";
+	public static final ListItemBinder<?, SearchAndGoResult> BINDER;
+	
+	static {
+		BINDER = ListItemBinderManager.getCorrespondingBinder(SearchAndGoResult.class);
+	}
 	
 	/* Variables */
 	private final SearchSearchAndGoTask task;
@@ -44,10 +49,12 @@ public class SearchResultResponse extends AbstractResponse {
 		jsonObject.put(JSON_KEY_QUERY, task.getQuery());
 		jsonObject.put(JSON_KEY_RESULTS, resultsjsonArray);
 		
-		ListItemBinder<?, SearchAndGoResult> binder = ListItemBinderManager.getCorrespondingBinder(SearchAndGoResult.class);
-		
 		int count = 0;
 		for (Entry<String, SearchAndGoResult> entry : workmap.entrySet()) {
+			if (count++ >= 70) {
+				break;
+			}
+			
 			String uniqueKey = entry.getKey();
 			SearchAndGoResult result = entry.getValue();
 			
@@ -55,13 +62,9 @@ public class SearchResultResponse extends AbstractResponse {
 			
 			resultJsonObject.put(JSON_KEY_ITEM_KEY, uniqueKey);
 			resultJsonObject.put(JSON_KEY_ITEM_SCORE, result.score());
-			resultJsonObject.put(JSON_KEY_ITEM_ITEM, (JsonAware) () -> binder.convertItemToString(result));
+			resultJsonObject.put(JSON_KEY_ITEM_OBJECT, (JsonAware) () -> BINDER.convertItemToString(result));
 			
 			resultsjsonArray.add(resultJsonObject);
-			
-			if (count++ >= 70) {
-				break ;
-			}
 		}
 		
 		return jsonObject;

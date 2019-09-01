@@ -17,7 +17,8 @@
     <link rel="stylesheet" href="assets/styles/main.css">
     <link rel="stylesheet" href="assets/styles/scrollbar.css">
 
-    <!-- Material Icons -->
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 
@@ -116,19 +117,19 @@
                     </ul>
                 </div>
                 <div v-if="results.length != 0">
-                    <div v-for="result in results" class="col m12 s12 gallery-item gallery-horizontal gallery-expand polygon">
+                    <div v-for="result in results" data-type="searchandgo.result" v-bind:data-md5="result.unique_md5" class="col m12 s12 gallery-item gallery-horizontal gallery-expand polygon">
                         <div class="gallery-curve-wrapper">
                             <a class="gallery-cover gray result-cover-container">
-                                <header v-bind:style="{ backgroundImage: 'url(' + result.item.image_url + ')' }" class="card-result-picture"></header>
+                                <header v-bind:style="{ backgroundImage: 'url(' + result.object.item.image_url + ')' }" class="card-result-picture"></header>
                             </a>
                             <div class="gallery-header">
-                                <h4>{{ result.item.name }}</h4>
-                                <p>{{ result.item.description }}</p>
+                                <h4>{{ result.object.item.name }}</h4>
+                                <p>{{ result.object.item.description }}</p>
                             </div>
                             <div class="gallery-body">
                                 <div class="title-wrapper">
-                                    <h3>{{ result.item.name }}</h3>
-                                    <span class="price">{{ result.item.type }}</span>
+                                    <h3>{{ result.object.item.name }}</h3>
+                                    <span class="price">{{ result.object.item.parent_provider }} -- {{ result.object.item.type }}</span>
                                 </div>
                                 <div class="row">
                                     <div class="col s12">
@@ -149,13 +150,16 @@
                                             <ul v-for="additional in result.additional_data.informations" class="collection with-header">
                                                 <div class="collection-header">
                                                     <i class="icon-align material-icons">info</i>
-                                                    <strong> {{ translations[additional.type] }} </strong>
+                                                    <strong v-bind:data-i18n="'result.type.' + additional.type.toLowerCase()" class="translatable">?</strong>
                                                 </div>
-                                                <div class="collection-item">
-                                                    <div v-if="additional.type == 'GENDERS'">
-                                                        <div v-for="gender in additional.value" class="chip">{{ gender.name }}</div>
-                                                    </div>
-                                                    <span v-else>{{ additional.value }}</span>
+                                                <div v-if="additional.type == 'GENDERS'" class="collection-item">
+                                                    <div v-for="gender in additional.value" class="chip">{{ gender.object.name }}</div>
+                                                </div>
+                                                <div v-else-if="additional.type == 'RATING'" class="collection-item">
+                                                    <div v-bind:data-average="additional.value.object.average" v-bind:data-best="additional.value.object.best" v-bind:data-votes="additional.value.object.votes" class="star-container" style="margin-bottom: 0px;"></div>
+                                                </div>
+                                                <div v-else class="collection-item">
+                                                    <span>{{ additional.value }}</span>
                                                 </div>
                                             </ul>
                                         </p>
@@ -170,11 +174,11 @@
                                                     <i v-if="additional.type == 'ITEM_VIDEO'" class="icon-align material-icons">video_library</i>
                                                     <i v-else-if="additional.type == 'ITEM_CHAPTER'" class="icon-align material-icons">library_books</i>
                                                     <i v-else class="icon-align material-icons">error</i>
-                                                    <strong> {{ translations[additional.type] }} </strong>
+                                                    <strong class="translatable" v-bind:data-i18n="'result.type.' + additional.type.toLowerCase()">?</strong>
                                                 </div>
                                                 <div class="collection-item row">
                                                     <a class="col s6 btn-flat disabled">
-                                                        <span style="color: black;">{{ additional.value.name }}</span>
+                                                        <span style="color: black;">{{ additional.value.object.url }}</span>
                                                     </a>
                                                     <a v-if="additional.value.url != undefined" class="col s4 offset-s2 waves-effect waves-light btn no-shadow">WATCH</a>
                                                 </div>
@@ -184,8 +188,8 @@
                                 </div>
                             </div>
                             <div class="gallery-action">
-                                <a class="btn-floating btn-large waves-effect waves-light">
-                                    <i class="material-icons">favorite</i>
+                                <a v-bind:href="result.object.item.url" target="_blank" class="btn-floating btn-large waves-effect waves-light">
+                                    <i class="material-icons">open_in_new</i>
                                 </a>
                             </div>
                         </div>
@@ -341,6 +345,7 @@
     <script src="assets/scripts/constants.js"></script>
     <script src="assets/scripts/utils.js"></script>
     <script src="assets/scripts/i18n.js"></script>
+    <script src="assets/scripts/rating-star.js"></script>
     <script src="assets/scripts/boxplayweb.main.js"></script>
     <script src="assets/scripts/boxplayweb.socket.js"></script>
     <script src="assets/scripts/boxplayweb.search.js"></script>

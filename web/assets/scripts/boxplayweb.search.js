@@ -26,7 +26,7 @@ class BoxPlayWebSearch {
 
         BoxPlayWebSearch.attachEvent();
 
-        BoxPlayWebSocket.subscribe(["task_progression_notification", "search_starting_soon"], function(name, content) {
+        BoxPlayWebSocket.subscribe(["task_progression_notification", "task_enqueued"], function(name, content) {
             if (!BoxPlayWebSearch.inSearch) {
                 return;
             }
@@ -46,7 +46,7 @@ class BoxPlayWebSearch {
             let step = undefined;
             let delay = 0;
             switch (name) {
-                case "search_starting_soon":
+                case "task_enqueued":
                     {
                         step = findStep("head", "search-step-queue");
                         break;
@@ -258,6 +258,26 @@ class BoxPlayWebSearch {
                 }, 200);
             }
         }
+    }
+
+    static onResultOpen(md5) {
+        let corresponding = undefined;
+
+        for (let result of mainVue.results) {
+            if (result.unique_md5 == md5) {
+                corresponding = result;
+                break;
+            }
+        }
+
+        if (corresponding == undefined) {
+            console.warn("BoxPlayWebSearch: No match for result with md5: " + md5);
+            return;
+        }
+
+        BoxPlayWebSocket.request("get_additional", {
+            "object": corresponding.object,
+        });
     }
 
 }
