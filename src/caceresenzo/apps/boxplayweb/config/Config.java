@@ -10,11 +10,31 @@ public class Config extends Configuration {
 	/* Instances */
 	private static Config CONFIG;
 	
+	/* Files */
 	@ConfigFile(name = "config", processor = PropertiesConfigProcessor.class)
 	public static String CONFIG_FILE = "config.properties";
 	
+	/* Entries */
 	@ConfigProperty(defaultValue = "8000", type = ConfigProperty.PropertyType.INTEGER, file = "config", key = "websocket.port")
 	public static int WEB_SOCKET_PORT;
+	
+	@ConfigProperty(defaultValue = "false", type = ConfigProperty.PropertyType.BOOLEAN, file = "config", key = "websocket.secure.enabled")
+	public static boolean WEB_SOCKET_SECURE_ENABLED;
+	
+	@ConfigProperty(defaultValue = "JKS", type = ConfigProperty.PropertyType.STRING, file = "config", key = "websocket.secure.store-type")
+	public static String WEB_SOCKET_SECURE_STORE_TYPE;
+	
+	@ConfigProperty(defaultValue = "keystore.ks", type = ConfigProperty.PropertyType.STRING, file = "config", key = "websocket.secure.key-file")
+	public static String WEB_SOCKET_SECURE_KEY_FILE;
+	
+	@ConfigProperty(defaultValue = "password", type = ConfigProperty.PropertyType.STRING, file = "config", key = "websocket.secure.store-password")
+	public static String WEB_SOCKET_SECURE_STORE_PASSWORD;
+	
+	@ConfigProperty(defaultValue = "password", type = ConfigProperty.PropertyType.STRING, file = "config", key = "websocket.secure.key-password")
+	public static String WEB_SOCKET_SECURE_KEY_PASSWORD;
+
+	@ConfigProperty(defaultValue = "8100", type = ConfigProperty.PropertyType.INTEGER, file = "config", key = "websocket.secure.port")
+	public static int WEB_SOCKET_SECURE_PORT;
 	
 	@ConfigProperty(defaultValue = "100", type = ConfigProperty.PropertyType.INTEGER, file = "config", key = "websocket.server.connection.lost.timeout")
 	public static int WEB_SOCKET_SERVER_CONNECTION_LOST_TIMEOUT;
@@ -30,7 +50,7 @@ public class Config extends Configuration {
 		CONFIG = (Config) initialize(Config.class);
 	}
 	
-	/** @return Config's singleton */
+	/** @return Config's singleton. */
 	public static Config getConfig() {
 		return CONFIG;
 	}
