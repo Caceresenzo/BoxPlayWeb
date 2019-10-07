@@ -1,15 +1,9 @@
 package caceresenzo.apps.boxplayweb.searchandgo.tasks;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import caceresenzo.apps.boxplayweb.client.Client;
 import caceresenzo.apps.boxplayweb.exchange.implementations.responses.TaskProgressionNotificationResponse;
 
 public abstract class AbstractSearchAndGoTask implements Runnable {
-	
-	/* Static */
-	private static Logger LOGGER = LoggerFactory.getLogger(AbstractSearchAndGoTask.class);
 	
 	/* Variables */
 	private final String name;
@@ -61,7 +55,6 @@ public abstract class AbstractSearchAndGoTask implements Runnable {
 	 *            Additional message.
 	 */
 	public void notifyProgression(Progression progression, Object message) {
-		LOGGER.info("Sending progression {} to client with token {}", progression, client.getToken());
 		client.send(new TaskProgressionNotificationResponse(this, progression, message));
 	}
 	

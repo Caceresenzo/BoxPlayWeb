@@ -5,6 +5,7 @@ import caceresenzo.apps.boxplayweb.exchange.AbstractErrorResponse;
 
 public class FailedRequestErrorResponse extends AbstractErrorResponse {
 
+	/* Constructor */
 	public FailedRequestErrorResponse(String cause) {
 		super(BoxPlayWebError.FAILED_REQUEST, cause);
 	}

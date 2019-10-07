@@ -36,6 +36,7 @@ public class RequestProcessor {
 		this.processors = new HashMap<>();
 	}
 	
+	/** Bind {@link AbstractRequestProcessor request processors}. */
 	public void initialize() {
 		bindProcessor(new HandshakeRequestProcessor());
 		bindProcessor(new ProviderListRequestProcessor());
@@ -60,6 +61,14 @@ public class RequestProcessor {
 		processors.put(processor.getName(), processor);
 	}
 	
+	/**
+	 * Process a raw message received by a {@link WebSocket socket}.
+	 * 
+	 * @param socket
+	 *            {@link WebSocket Socket} witch the request was made.
+	 * @param raw
+	 *            Raw request content.
+	 */
 	public void process(WebSocket socket, String raw) {
 		JsonObject jsonObject;
 		
@@ -97,6 +106,14 @@ public class RequestProcessor {
 		}
 	}
 	
+	/**
+	 * Send a {@link AbstractResponse response} to a socket.
+	 * 
+	 * @param socket
+	 *            Target {@link WebSocket socket}.
+	 * @param response
+	 *            {@link AbstractResponse Response} to send.
+	 */
 	public void sendToSocket(WebSocket socket, AbstractResponse response) {
 		try {
 			JsonObject jsonObject = new JsonObject();

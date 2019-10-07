@@ -12,7 +12,7 @@ import caceresenzo.apps.boxplayweb.searchandgo.tasks.AbstractSearchAndGoTask;
 public class SearchAndGoTaskExecutor {
 	
 	/* Static */
-	private static Logger LOGGER = LoggerFactory.getLogger(SearchAndGoTaskExecutor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SearchAndGoTaskExecutor.class);
 	
 	/* Singleton */
 	private static SearchAndGoTaskExecutor INSTANCE;

@@ -4,7 +4,8 @@ import caceresenzo.apps.boxplayweb.config.BoxPlayWebError;
 import caceresenzo.apps.boxplayweb.exchange.AbstractErrorResponse;
 
 public class InvalidTokenErrorResponse extends AbstractErrorResponse {
-	
+
+	/* Constructor */
 	public InvalidTokenErrorResponse(String cause) {
 		super(BoxPlayWebError.INVALID_TOKEN, cause);
 	}

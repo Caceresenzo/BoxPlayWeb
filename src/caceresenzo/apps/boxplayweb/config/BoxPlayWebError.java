@@ -1,7 +1,8 @@
 package caceresenzo.apps.boxplayweb.config;
 
 public class BoxPlayWebError {
-
+	
+	/* Errors */
 	public static final BoxPlayWebError INVALID_REQUEST = new BoxPlayWebError(1, "Invalid Request");
 	public static final BoxPlayWebError FAILED_REQUEST = new BoxPlayWebError(2, "Failed Request");
 	public static final BoxPlayWebError INVALID_TOKEN = new BoxPlayWebError(3, "Invalid Token");
@@ -16,10 +17,12 @@ public class BoxPlayWebError {
 		this.message = message;
 	}
 	
+	/** @return Error's code. */
 	public int getCode() {
 		return code;
 	}
 	
+	/** @return Error's message. */
 	public String getMessage() {
 		return message;
 	}

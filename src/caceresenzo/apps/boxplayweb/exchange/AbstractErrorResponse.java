@@ -18,6 +18,7 @@ public abstract class AbstractErrorResponse extends AbstractResponse {
 	private BoxPlayWebError error;
 	private String cause;
 	
+	/* Constructor */
 	public AbstractErrorResponse(BoxPlayWebError error, String cause) {
 		super(NAME);
 

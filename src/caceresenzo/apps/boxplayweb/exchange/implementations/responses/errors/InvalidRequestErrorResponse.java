@@ -5,6 +5,7 @@ import caceresenzo.apps.boxplayweb.exchange.AbstractErrorResponse;
 
 public class InvalidRequestErrorResponse extends AbstractErrorResponse {
 
+	/* Constructor */
 	public InvalidRequestErrorResponse(String cause) {
 		super(BoxPlayWebError.INVALID_REQUEST, cause);
 	}

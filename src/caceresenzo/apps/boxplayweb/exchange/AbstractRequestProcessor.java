@@ -21,8 +21,20 @@ public abstract class AbstractRequestProcessor {
 		this.clientManager = ClientManager.get();
 	}
 	
+	/**
+	 * Process a {@link WebSocket}'s request.
+	 * 
+	 * @param socket
+	 *            Author's {@link WebSocket socket} of the request.
+	 * @param client
+	 *            Target {@link Client client} found with the request provided's token.
+	 * @param jsonAware
+	 *            Content of the request.
+	 * @return A {@link AbstractResponse response} to send back to the author of the request.
+	 */
 	public abstract AbstractResponse process(WebSocket socket, Client client, JsonAware jsonAware);
 	
+	/** @return Weather or not this request can accept request without a token, and so without a client. */
 	public boolean isAcceptingRequestWithoutToken() {
 		return false;
 	}
