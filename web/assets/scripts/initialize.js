@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	BoxPlayWeb.initialize();
 	BoxPlayWebConnectPanel.initialize();
 	BoxPlayWebSearch.initialize();
+	BoxPlayWebVideo.initialize();
 	BoxPlayWebSocket.connect();
 	
 	refreshGallery();

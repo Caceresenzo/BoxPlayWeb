@@ -20,6 +20,9 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <!-- Libraries -->
+    <link href="https://vjs.zencdn.net/7.6.5/video-js.css" rel="stylesheet">
 </head>
 
 <body class="scrollbar">
@@ -447,7 +450,7 @@
                         </div>
                         <ul class="collection with-header">
                             <li v-for="(quality, index) in extractedUrls.qualities" class="collection-item">
-                                <a v-bind:href="quality.video_url" target="_blank">
+                                <a v-bind:onclick="'BoxPlayWebVideo.play(\'' + quality.video_url + '\')'" href="#">
                                     <div>
                                         {{ quality.resolution ? quality.resolution : translate("quality-selector.default") }}
                                         <div class="secondary-content">
@@ -463,36 +466,61 @@
                     <a onclick="BoxPlayWebSearch.onCancelPlayerUrlSelection()" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
                 </div>
             </div>
+            <div id="modal-video-player" class="modal scrollbar">
+                <div class="modal-content">
+                    <div class="container">
+                        <div>
+                            <h5 class="center-align">{{ extractedUrls.title }}</h5>
+                            <h6 class="center-align">{{ extractedUrls.subtitle }}</h6>
+                        </div>
+                        <div class="center-align">
+                            <video id="video-player" class="responsive-video video-js" controls preload="none" width="640" height="264" data-setup="{}" style="position: relative; left: 50%; transform: translateX(-50%);">
+                                <p class='vjs-no-js'>
+                                    To view this video please enable JavaScript, and consider upgrading to a web browser that
+                                    <a href='https://videojs.com/html5-video-support/' target='_blank'>supports HTML5 video</a>
+                                </p>
+                            </video>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a onclick="BoxPlayWebVideo.onCancelVideoModal()" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+                </div>
+            </div>
         </div>
     </div>
     <!-- /.container -->
 
     <!-- Main Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="assets/libraries/js-cookie/js.cookie.min.js"></script>
-    <script src="assets/libraries/blueimp-md5/md5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js "></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js "></script>
+    <script src="assets/libraries/js-cookie/js.cookie.min.js "></script>
+    <script src="assets/libraries/blueimp-md5/md5.min.js "></script>
+    <script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js "></script>
+    <script src='https://vjs.zencdn.net/7.6.5/video.js'></script>
 
     <!-- UI Libraries -->
-    <script src="https://cdn.jsdelivr.net/materialize/0.98.0/js/materialize.min.js"></script>
-    <script src="assets/libraries/materializecss/galleryExpand.js"></script>
+    <script src="https://cdn.jsdelivr.net/materialize/0.98.0/js/materialize.min.js "></script>
+    <script src="assets/libraries/materializecss/galleryExpand.js "></script>
 
     <!-- BoxPlay Libraries -->
-    <script src="assets/scripts/constants.js"></script>
-    <script src="assets/scripts/utils.js"></script>
-    <script src="assets/scripts/i18n.js"></script>
-    <script src="assets/scripts/rating-star.js"></script>
-    <script src="assets/scripts/boxplayweb.main.js"></script>
-    <script src="assets/scripts/boxplayweb.socket.js"></script>
-    <script src="assets/scripts/boxplayweb.search.js"></script>
-    <script src="assets/scripts/boxplayweb.connection-panel.js"></script>
-    <script src="assets/scripts/boxplayweb.action.js"></script>
-    <script src="assets/scripts/boxplayweb.modals.js"></script>
-    <script src="assets/scripts/ui.js"></script>
-    <script src="assets/scripts/initialize.js"></script>
+    <script src="assets/scripts/constants.js "></script>
+    <script src="assets/scripts/utils.js "></script>
+    <script src="assets/scripts/i18n.js "></script>
+    <script src="assets/scripts/rating-star.js "></script>
+    <script src="assets/scripts/boxplayweb.main.js "></script>
+    <script src="assets/scripts/boxplayweb.socket.js "></script>
+    <script src="assets/scripts/boxplayweb.search.js "></script>
+    <script src="assets/scripts/boxplayweb.connection-panel.js "></script>
+    <script src="assets/scripts/boxplayweb.action.js "></script>
+    <script src="assets/scripts/boxplayweb.modals.js "></script>
+    <script src="assets/scripts/boxplayweb.video.js "></script>
+    <script src="assets/scripts/ui.js "></script>
+    <script src="assets/scripts/initialize.js "></script>
 
     <script>
-        let modal = new BoxPlayWebModal("modal-select-player-url");
+        let modal = new BoxPlayWebModal("modal-select-player-url ");
         modal.open();
     </script>
 </body>

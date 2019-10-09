@@ -74,6 +74,7 @@ class i18n {
         english.set("get-additional-step.informations.label", "Informations");
         english.set("get-additional-step.content.label", "Content");
         english.set("gallery.button.back", "Back");
+        english.set("quality-selector.default", "Default quality");
 
         let french = i18n.registerLanguage("fr", "Français");
         french.set("date.at", "à");
@@ -132,6 +133,7 @@ class i18n {
         french.set("get-additional-step.informations.label", "Informations");
         french.set("get-additional-step.content.label", "Contenu");
         french.set("gallery.button.back", "Retour");
+        french.set("quality-selector.default", "Qualité par defaut");
     }
 
     static prepareSettingsSection() {

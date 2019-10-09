@@ -1,10 +1,10 @@
 class BoxPlayWebModal {
 
-    constructor(id) {
+    constructor(id, dismissible=false) {
         this.id = id;
         this.opened = false;
         this.modal = $("#" + id).modal({
-            "dismissible": false,
+            "dismissible": dismissible,
         });
     }
 
