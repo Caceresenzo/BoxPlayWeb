@@ -10,7 +10,7 @@ import caceresenzo.apps.boxplayweb.exchange.AbstractResponse;
 import caceresenzo.apps.boxplayweb.exchange.implementations.responses.TaskEnqueuedResponse;
 import caceresenzo.apps.boxplayweb.exchange.implementations.responses.errors.FailedRequestErrorResponse;
 import caceresenzo.apps.boxplayweb.searchandgo.SearchAndGoTaskExecutor;
-import caceresenzo.apps.boxplayweb.searchandgo.tasks.implementations.ExtractUrlSearchAndGoTask;
+import caceresenzo.apps.boxplayweb.searchandgo.tasks.implementations.ExtractUrlsSearchAndGoTask;
 import caceresenzo.libs.boxplay.culture.searchngo.content.image.IImageContentProvider;
 import caceresenzo.libs.boxplay.culture.searchngo.content.video.IVideoContentProvider;
 import caceresenzo.libs.boxplay.culture.searchngo.data.models.SimpleData;
@@ -24,7 +24,7 @@ import caceresenzo.libs.boxplay.culture.searchngo.result.SearchAndGoResult;
 import caceresenzo.libs.json.JsonAware;
 import caceresenzo.libs.json.JsonObject;
 
-public class ExtractUrlRequestProcessor extends AbstractRequestProcessor {
+public class ExtractUrlsRequestProcessor extends AbstractRequestProcessor {
 	
 	/* Json Key */
 	public static final String JSON_KEY_SOURCE_RESULT = "source_result";
@@ -34,7 +34,7 @@ public class ExtractUrlRequestProcessor extends AbstractRequestProcessor {
 	public static final String NAME = "extract_url";
 	
 	/* Constructor */
-	public ExtractUrlRequestProcessor() {
+	public ExtractUrlsRequestProcessor() {
 		super(NAME);
 	}
 	
@@ -54,7 +54,7 @@ public class ExtractUrlRequestProcessor extends AbstractRequestProcessor {
 			return new FailedRequestErrorResponse(exception.getMessage());
 		}
 		
-		SearchAndGoTaskExecutor.get().execute(new ExtractUrlSearchAndGoTask(client, searchAndGoResult, dataObject));
+		SearchAndGoTaskExecutor.get().execute(new ExtractUrlsSearchAndGoTask(client, searchAndGoResult, dataObject));
 		
 		return new TaskEnqueuedResponse();
 	}

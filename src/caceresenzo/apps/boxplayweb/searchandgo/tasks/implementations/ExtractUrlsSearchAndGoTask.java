@@ -13,7 +13,7 @@ import caceresenzo.libs.boxplay.culture.searchngo.data.models.content.completed.
 import caceresenzo.libs.boxplay.culture.searchngo.providers.SearchAndGoProvider;
 import caceresenzo.libs.boxplay.culture.searchngo.result.SearchAndGoResult;
 
-public class ExtractUrlSearchAndGoTask extends AbstractSearchAndGoTask {
+public class ExtractUrlsSearchAndGoTask extends AbstractSearchAndGoTask {
 	
 	/* Constants */
 	public static final String NAME = "extract_url";
@@ -23,7 +23,7 @@ public class ExtractUrlSearchAndGoTask extends AbstractSearchAndGoTask {
 	private final SimpleUrlData dataObject;
 	
 	/* Constructor */
-	public ExtractUrlSearchAndGoTask(Client client, SearchAndGoResult searchAndGoResult, SimpleUrlData dataObject) {
+	public ExtractUrlsSearchAndGoTask(Client client, SearchAndGoResult searchAndGoResult, SimpleUrlData dataObject) {
 		super(NAME, client);
 		
 		this.searchAndGoResult = searchAndGoResult;

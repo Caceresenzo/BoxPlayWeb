@@ -5,6 +5,7 @@ class BoxPlayWeb {
         BoxPlayWeb.providers = [];
         BoxPlayWeb.results = [];
         BoxPlayWeb.extractedUrls = [];
+        BoxPlayWeb.extractedQualities = [];
 
         BoxPlayWebSocket.subscribe(["handshake"], function(name, content) {
             BoxPlayWeb.token = content.token;
@@ -106,7 +107,7 @@ class BoxPlayWeb {
             }, 100);
         });
 
-        BoxPlayWebSocket.subscribe(["extracted_url"], function(name, content) {
+        BoxPlayWebSocket.subscribe(["extracted_urls"], function(name, content) {
             let urls = content.urls;
 
             BoxPlayWeb.extractedUrls = urls;
@@ -114,6 +115,17 @@ class BoxPlayWeb {
 
             setTimeout(function() {
                 BoxPlayWeb.openUrlSelector();
+            }, 100);
+        });
+
+        BoxPlayWebSocket.subscribe(["extracted_video_direct_urls"], function(name, content) {
+            let qualities = content.qualities;
+
+            BoxPlayWeb.extractedQualities = qualities;
+            console.log("BoxPlayWeb: Got qualities list (" + qualities.length + " item(s))");
+
+            setTimeout(function() {
+                BoxPlayWeb.openQualitySelector();
             }, 100);
         });
     }
@@ -157,13 +169,27 @@ class BoxPlayWeb {
     }
 
     static openUrlSelector() {
-        clearVueJsField(mainVue.extractedUrls);
+        clearVueJsField(mainVue.extractedUrls.urls);
 
         for (let url of BoxPlayWeb.extractedUrls) {
-            mainVue.extractedUrls.push(url);
+            mainVue.extractedUrls.urls.push(url);
         }
 
         BoxPlayWebSearch.MODALS.SELECT_PLAYER_URL.open();
+    }
+
+    static openQualitySelector() {
+        clearVueJsField(mainVue.extractedUrls.qualities);
+
+        for (let url of BoxPlayWeb.extractedQualities) {
+            if (url.video_url == null) {
+                continue;
+            }
+
+            mainVue.extractedUrls.qualities.push(url);
+        }
+
+        BoxPlayWebSearch.MODALS.SELECT_VIDEO_QUALITY.open();
     }
 
 }

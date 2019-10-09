@@ -3,7 +3,7 @@ package caceresenzo.apps.boxplayweb.exchange.implementations.responses;
 import java.util.Collections;
 
 import caceresenzo.apps.boxplayweb.exchange.AbstractResponse;
-import caceresenzo.apps.boxplayweb.searchandgo.tasks.implementations.ExtractUrlSearchAndGoTask;
+import caceresenzo.apps.boxplayweb.searchandgo.tasks.implementations.ExtractUrlsSearchAndGoTask;
 import caceresenzo.libs.json.JsonArray;
 import caceresenzo.libs.json.JsonAware;
 import caceresenzo.libs.json.JsonObject;
@@ -15,14 +15,14 @@ public class ExtractedUrlsResultResponse extends AbstractResponse {
 	public static final String JSON_KEY_URLS = "urls";
 	
 	/* Constants */
-	public static final String NAME = "extracted_url";
+	public static final String NAME = "extracted_urls";
 	
 	/* Variables */
-	private final ExtractUrlSearchAndGoTask task;
+	private final ExtractUrlsSearchAndGoTask task;
 	private final String[] urls;
 	
 	/* Constructor */
-	public ExtractedUrlsResultResponse(ExtractUrlSearchAndGoTask task, String[] urls) {
+	public ExtractedUrlsResultResponse(ExtractUrlsSearchAndGoTask task, String[] urls) {
 		super(NAME);
 		
 		this.task = task;

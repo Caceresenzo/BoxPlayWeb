@@ -5,7 +5,9 @@ class BoxPlayWebSearch {
             "SEARCH": new BoxPlayWebModal("modal-search"),
             "GET_ADDITIONAL": new BoxPlayWebModal("modal-get-additional"),
             "EXTRACT_PLAYER_URLS": new BoxPlayWebModal("modal-extract-player-urls"),
-            "SELECT_PLAYER_URL": new BoxPlayWebModal("modal-select-player-url"),
+            "SELECT_PLAYER_URL": new BoxPlayWebModal("modal-select-player-url", true),
+            "EXTRACT_VIDEO_DIRECT_URL": new BoxPlayWebModal("modal-extract-video-direct-url"),
+            "SELECT_VIDEO_QUALITY": new BoxPlayWebModal("modal-select-video-quality", true),
         };
 
         BoxPlayWebSearch.DIVS = {
@@ -41,6 +43,12 @@ class BoxPlayWebSearch {
                 BoxPlayWebSearch.createSearchStep("extract-player-urls-step-queue"),
                 BoxPlayWebSearch.createSearchStep("extract-player-urls-step-started"),
                 BoxPlayWebSearch.createSearchStep("extract-player-urls-step-finished", 1, BoxPlayWebSearch.MODALS.EXTRACT_PLAYER_URLS),
+            ],
+            "EXTRACT_VIDEO_DIRECT_URL": [
+                BoxPlayWebSearch.createSearchStep("extract-video-direct-url-step-request"),
+                BoxPlayWebSearch.createSearchStep("extract-video-direct-url-step-queue"),
+                BoxPlayWebSearch.createSearchStep("extract-video-direct-url-step-started"),
+                BoxPlayWebSearch.createSearchStep("extract-video-direct-url-step-finished", 1, BoxPlayWebSearch.MODALS.EXTRACT_VIDEO_DIRECT_URL),
             ]
         }
 
@@ -251,9 +259,7 @@ class BoxPlayWebSearch {
 
                 case "task_progression_notification":
                     {
-                        let task = content.task;
                         let progression = content.progression;
-                        let message = content.message;
 
                         switch (progression) {
                             case "START":
@@ -265,6 +271,61 @@ class BoxPlayWebSearch {
                             case "FINISHED":
                                 {
                                     step = findStep("extract-player-urls-step-finished");
+                                    delay = 100;
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+            }
+
+            if (step != undefined) {
+                setTimeout(function() {
+                    step.complete();
+                }, delay);
+            }
+        });
+
+        BoxPlayWebSocket.subscribe(["task_progression_notification", "task_enqueued"], function(name, content) {
+            if (!BoxPlayWebSearch.MODALS.EXTRACT_VIDEO_DIRECT_URL.isOpen()) {
+                return;
+            }
+
+            let findStep = function(id) {
+                let array = BoxPlayWebSearch.STEPS.EXTRACT_VIDEO_DIRECT_URL;
+
+                for (let step of array) {
+                    if (id == step.id) {
+                        return step;
+                    }
+                }
+
+                return undefined;
+            }
+
+            let step = undefined;
+            let delay = 0;
+            switch (name) {
+                case "task_enqueued":
+                    {
+                        step = findStep("extract-video-direct-url-step-queue");
+                        break;
+                    }
+
+                case "task_progression_notification":
+                    {
+                        let progression = content.progression;
+
+                        switch (progression) {
+                            case "START":
+                                {
+                                    step = findStep("extract-video-direct-url-step-started");
+                                    break;
+                                }
+
+                            case "FINISHED":
+                                {
+                                    step = findStep("extract-video-direct-url-step-finished");
                                     delay = 100;
                                     break;
                                 }
@@ -452,8 +513,11 @@ class BoxPlayWebSearch {
         let sourceResult = corresponding.object;
         let dataObject = viewableContentItem.value;
 
+        mainVue.extractedUrls.title = sourceResult.item.name;
+        mainVue.extractedUrls.subtitle = dataObject.object.name;
+        
         BoxPlayWebSearch.MODALS.EXTRACT_PLAYER_URLS.open();
-
+        
         let steps = BoxPlayWebSearch.STEPS.EXTRACT_PLAYER_URLS;
         steps.forEach((step) => step.hide());
         steps[0].complete();
@@ -461,6 +525,18 @@ class BoxPlayWebSearch {
         BoxPlayWebSocket.request("extract_url", {
             "source_result": sourceResult,
             "data_object": dataObject,
+        });
+    }
+
+    static onWantToPlay(playerUrl) {
+        BoxPlayWebSearch.MODALS.EXTRACT_VIDEO_DIRECT_URL.open();
+
+        let steps = BoxPlayWebSearch.STEPS.EXTRACT_VIDEO_DIRECT_URL;
+        steps.forEach((step) => step.hide());
+        steps[0].complete();
+
+        BoxPlayWebSocket.request("extract_video_direct_url", {
+            "url": playerUrl,
         });
     }
 

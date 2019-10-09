@@ -174,7 +174,7 @@
                                                 </div>
                                                 <div class="collection-item row">
                                                     <a class="col s6 btn-flat disabled">
-                                                        <span style="color: black;">{{ additional.value.object.url }}</span>
+                                                        <span style="color: black;">{{ additional.value.object.name }}</span>
                                                     </a>
                                                     <a v-if="additional.value.object.url != undefined && additional.type == 'ITEM_VIDEO'" v-bind:onclick="'BoxPlayWebSearch.onWantToWatch(\'' + result.unique_md5 + '\', ' + index + ')'" class="col s4 offset-s2 waves-effect waves-light btn no-shadow">WATCH</a>
                                                     <a v-if="additional.value.object.url != undefined && additional.type == 'ITEM_CHAPTER'" v-bind:onclick="'BoxPlayWebSearch.onWantToRead(\'' + result.unique_md5 + '\', ' + index + ')'" class="col s4 offset-s2 waves-effect waves-light btn no-shadow">READ</a>
@@ -378,9 +378,83 @@
             <div id="modal-select-player-url" class="modal scrollbar">
                 <div class="modal-content">
                     <div class="container">
+                        <div>
+                            <h5 class="center-align">{{ extractedUrls.title }}</h5>
+                            <h6 class="center-align">{{ extractedUrls.subtitle }}</h6>
+                        </div>
                         <ul class="collection with-header">
-                            <li v-for="url in extractedUrls" class="collection-item">
-                                <div><a href="#" onclick="alert('')">{{ url }}</a><a v-bind:href="url" target="_blank" class="secondary-content"><i class="material-icons">open_in_new</i></a></div>
+                            <li v-for="(url, index) in extractedUrls.urls" class="collection-item">
+                                <div>
+                                    <a href="#" v-bind:onclick="'BoxPlayWebSearch.onWantToPlay(\'' + extractedUrls.urls[index] + '\')'">{{ url }}</a>
+                                    <a v-bind:href="url" target="_blank" class="secondary-content">
+                                        <i class="material-icons">open_in_new</i>
+                                    </a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a onclick="BoxPlayWebSearch.onCancelPlayerUrlSelection()" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+                </div>
+            </div>
+            <div id="modal-extract-video-direct-url" class="modal scrollbar">
+                <div class="modal-content">
+                    <div class="container">
+                        <ul class="collection with-header">
+                            <li id="extract-video-direct-url-step-request" class="collection-item">
+                                <div>
+                                    <span class="translatable" data-i18n="generic-step.request.label">?</span>
+                                    <i class="secondary-content material-icons">check</i>
+                                </div>
+                            </li>
+                            <li id="extract-video-direct-url-step-queue" class="collection-item">
+                                <div>
+                                    <span class="translatable" data-i18n="generic-step.queue.label">?</span>
+                                    <i class="secondary-content material-icons">check</i>
+                                </div>
+                            </li>
+                            <li id="extract-video-direct-url-step-started" class="collection-item">
+                                <div>
+                                    <span class="translatable" data-i18n="generic-step.started.label">?</span>
+                                    <i class="secondary-content material-icons">check</i>
+                                </div>
+                            </li>
+                            <li id="extract-video-direct-url-step-finished" class="collection-item">
+                                <div>
+                                    <span class="translatable" data-i18n="generic-step.finished.label">?</span>
+                                    <i class="secondary-content material-icons">check</i>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="container center-align">
+                        <h6 class="translatable" data-i18n="initialization-step.please-wait">?</h6>
+                        <div class="progress">
+                            <div class="indeterminate"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="modal-select-video-quality" class="modal scrollbar">
+                <div class="modal-content">
+                    <div class="container">
+                        <div>
+                            <h5 class="center-align">{{ extractedUrls.title }}</h5>
+                            <h6 class="center-align">{{ extractedUrls.subtitle }}</h6>
+                        </div>
+                        <ul class="collection with-header">
+                            <li v-for="(quality, index) in extractedUrls.qualities" class="collection-item">
+                                <a v-bind:href="quality.video_url" target="_blank">
+                                    <div>
+                                        {{ quality.resolution ? quality.resolution : translate("quality-selector.default") }}
+                                        <div class="secondary-content">
+                                            <i class="material-icons">play_arrow</i>
+                                        </div>
+                                    </div>
+                                </a>
                             </li>
                         </ul>
                     </div>
