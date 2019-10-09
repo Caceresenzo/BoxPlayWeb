@@ -57,6 +57,11 @@ public class ClientManager {
 		return clients.get(token);
 	}
 	
+	/** Clear {@link Client} instances if they are not still connected. */
+	public void clearClosedClients() {
+		clients.values().removeIf((client) -> !client.isStillConnected());
+	}
+	
 	/** @return ClientManager's singleton instance. */
 	public static final ClientManager get() {
 		if (INSTANCE == null) {

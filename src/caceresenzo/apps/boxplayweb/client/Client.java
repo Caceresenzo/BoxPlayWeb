@@ -20,15 +20,15 @@ public class Client {
 		this.connections = new ArrayList<>();
 	}
 	
-	/** @return Tell weather or not at least one of the client registered connection is still open. */
-	public boolean isStillConnected() {
-		if (connections.isEmpty()) {
-			return false;
-		}
-		
-		return getFirstOpenConnection() != null;
-	}
-	
+	/**
+	 * Send a {@link AbstractResponse response} to the {@link Client client} via the first, still active, {@link WebSocket} connection found.<br>
+	 * If the {@link Client} is no longer connected, nothing will append.
+	 * 
+	 * @param response
+	 *            {@link AbstractResponse Response} to send.
+	 * @see #isStillConnected() Check if the client is still connected.
+	 * @see #getFirstOpenConnection() Get the first, still active, WebSocket connection.
+	 */
 	public void send(AbstractResponse response) {
 		if (!isStillConnected()) {
 			return;
@@ -37,6 +37,7 @@ public class Client {
 		RequestProcessor.get().sendToSocket(getFirstOpenConnection(), response);
 	}
 	
+	/** @return The first {@link WebSocket} that still open and not closed in the registered connections list. */
 	public WebSocket getFirstOpenConnection() {
 		for (WebSocket socket : connections) {
 			if (socket.isOpen() && !socket.isClosed()) {
@@ -45,6 +46,15 @@ public class Client {
 		}
 		
 		return null;
+	}
+	
+	/** @return Tell weather or not at least one of the client registered connection is still open. */
+	public boolean isStillConnected() {
+		if (connections.isEmpty()) {
+			return false;
+		}
+		
+		return getFirstOpenConnection() != null;
 	}
 	
 	/** @return Client's token. */

@@ -1,6 +1,7 @@
 package caceresenzo.apps.boxplayweb.searchandgo.tasks.implementations;
 
 import caceresenzo.apps.boxplayweb.client.Client;
+import caceresenzo.apps.boxplayweb.client.ClientManager;
 import caceresenzo.apps.boxplayweb.searchandgo.tasks.AbstractSearchAndGoTask;
 import caceresenzo.libs.boxplay.culture.searchngo.providers.ProviderWeakCache;
 
@@ -17,6 +18,7 @@ public class ClearCacheSearchAndGoTask extends AbstractSearchAndGoTask {
 	@Override
 	public void work() throws Exception {
 		ProviderWeakCache.clear();
+		ClientManager.get().clearClosedClients();
 	}
 	
 }
