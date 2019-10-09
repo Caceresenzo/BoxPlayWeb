@@ -21,7 +21,11 @@ var mainVue = new Vue({
         selectedLanguage: null,
         providers: [],
         enabledProviders: BoxPlayWebSearch.getEnabledProvidersFromCookies(),
-        results: []
+        results: [],
+        extractedUrls: [
+            "google.com",
+            "youtube.com"
+        ],
     }
 });
 

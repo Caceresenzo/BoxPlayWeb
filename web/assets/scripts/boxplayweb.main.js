@@ -4,6 +4,7 @@ class BoxPlayWeb {
         BoxPlayWeb.token = undefined;
         BoxPlayWeb.providers = [];
         BoxPlayWeb.results = [];
+        BoxPlayWeb.extractedUrls = [];
 
         BoxPlayWebSocket.subscribe(["handshake"], function(name, content) {
             BoxPlayWeb.token = content.token;
@@ -104,6 +105,17 @@ class BoxPlayWeb {
                 RatingStar.applyOnAll();
             }, 100);
         });
+
+        BoxPlayWebSocket.subscribe(["extracted_url"], function(name, content) {
+            let urls = content.urls;
+
+            BoxPlayWeb.extractedUrls = urls;
+            console.log("BoxPlayWeb: Got extracted urls list (" + urls.length + " item(s))");
+
+            setTimeout(function() {
+                BoxPlayWeb.openUrlSelector();
+            }, 100);
+        });
     }
 
     static reset() {
@@ -143,4 +155,15 @@ class BoxPlayWeb {
             refreshGallery();
         }, 100);
     }
+
+    static openUrlSelector() {
+        clearVueJsField(mainVue.extractedUrls);
+
+        for (let url of BoxPlayWeb.extractedUrls) {
+            mainVue.extractedUrls.push(url);
+        }
+
+        BoxPlayWebSearch.MODALS.SELECT_PLAYER_URL.open();
+    }
+
 }

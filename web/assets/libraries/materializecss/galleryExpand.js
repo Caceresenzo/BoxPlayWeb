@@ -472,7 +472,7 @@
                 $body.find('.title-wrapper').css({
                   marginLeft: origObjectWidth,
                   paddingLeft: contentPadding,
-                  height: headerOffsetTop
+                  /* height: headerOffsetTop */
                 });
               }
             }

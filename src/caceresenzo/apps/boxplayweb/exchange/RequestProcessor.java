@@ -8,6 +8,7 @@ import org.java_websocket.WebSocket;
 import caceresenzo.apps.boxplayweb.client.Client;
 import caceresenzo.apps.boxplayweb.client.ClientManager;
 import caceresenzo.apps.boxplayweb.exchange.implementations.processors.ClearCacheRequestProcessor;
+import caceresenzo.apps.boxplayweb.exchange.implementations.processors.ExtractUrlRequestProcessor;
 import caceresenzo.apps.boxplayweb.exchange.implementations.processors.GetAdditionalDataRequestProcessor;
 import caceresenzo.apps.boxplayweb.exchange.implementations.processors.HandshakeRequestProcessor;
 import caceresenzo.apps.boxplayweb.exchange.implementations.processors.ProviderListRequestProcessor;
@@ -43,6 +44,7 @@ public class RequestProcessor {
 		bindProcessor(new SearchRequestProcessor());
 		bindProcessor(new ClearCacheRequestProcessor());
 		bindProcessor(new GetAdditionalDataRequestProcessor());
+		bindProcessor(new ExtractUrlRequestProcessor());
 	}
 	
 	/**

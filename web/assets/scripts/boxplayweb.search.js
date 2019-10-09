@@ -4,6 +4,8 @@ class BoxPlayWebSearch {
         BoxPlayWebSearch.MODALS = {
             "SEARCH": new BoxPlayWebModal("modal-search"),
             "GET_ADDITIONAL": new BoxPlayWebModal("modal-get-additional"),
+            "EXTRACT_PLAYER_URLS": new BoxPlayWebModal("modal-extract-player-urls"),
+            "SELECT_PLAYER_URL": new BoxPlayWebModal("modal-select-player-url"),
         };
 
         BoxPlayWebSearch.DIVS = {
@@ -33,6 +35,12 @@ class BoxPlayWebSearch {
                 BoxPlayWebSearch.createSearchStep("get-additional-step-informations"),
                 BoxPlayWebSearch.createSearchStep("get-additional-step-content"),
                 BoxPlayWebSearch.createSearchStep("get-additional-step-finished", 1, BoxPlayWebSearch.MODALS.GET_ADDITIONAL),
+            ],
+            "EXTRACT_PLAYER_URLS": [
+                BoxPlayWebSearch.createSearchStep("extract-player-urls-step-request"),
+                BoxPlayWebSearch.createSearchStep("extract-player-urls-step-queue"),
+                BoxPlayWebSearch.createSearchStep("extract-player-urls-step-started"),
+                BoxPlayWebSearch.createSearchStep("extract-player-urls-step-finished", 1, BoxPlayWebSearch.MODALS.EXTRACT_PLAYER_URLS),
             ]
         }
 
@@ -214,6 +222,63 @@ class BoxPlayWebSearch {
                 }, delay);
             }
         });
+
+        BoxPlayWebSocket.subscribe(["task_progression_notification", "task_enqueued"], function(name, content) {
+            if (!BoxPlayWebSearch.MODALS.EXTRACT_PLAYER_URLS.isOpen()) {
+                return;
+            }
+
+            let findStep = function(id) {
+                let array = BoxPlayWebSearch.STEPS.EXTRACT_PLAYER_URLS;
+
+                for (let step of array) {
+                    if (id == step.id) {
+                        return step;
+                    }
+                }
+
+                return undefined;
+            }
+
+            let step = undefined;
+            let delay = 0;
+            switch (name) {
+                case "task_enqueued":
+                    {
+                        step = findStep("extract-player-urls-step-queue");
+                        break;
+                    }
+
+                case "task_progression_notification":
+                    {
+                        let task = content.task;
+                        let progression = content.progression;
+                        let message = content.message;
+
+                        switch (progression) {
+                            case "START":
+                                {
+                                    step = findStep("extract-player-urls-step-started");
+                                    break;
+                                }
+
+                            case "FINISHED":
+                                {
+                                    step = findStep("extract-player-urls-step-finished");
+                                    delay = 100;
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+            }
+
+            if (step != undefined) {
+                setTimeout(function() {
+                    step.complete();
+                }, delay);
+            }
+        });
     }
 
     static attachEvent() {
@@ -360,6 +425,47 @@ class BoxPlayWebSearch {
         BoxPlayWebSocket.request("get_additional", {
             "object": corresponding.object,
         });
+    }
+
+    static onWantToWatch(md5, index) {
+        let corresponding = undefined;
+
+        for (let result of mainVue.results) {
+            if (result.unique_md5 == md5) {
+                corresponding = result;
+                break;
+            }
+        }
+
+        if (corresponding == undefined) {
+            console.warn("BoxPlayWebSearch: No match for result with md5: " + md5);
+            return;
+        }
+
+        let viewableContentItem = corresponding.additional_data.content[index];
+
+        if (viewableContentItem == undefined) {
+            console.warn("BoxPlayWebSearch: No viewable content item for result with md5: " + md5 + " at index: " + index);
+            return;
+        }
+
+        let sourceResult = corresponding.object;
+        let dataObject = viewableContentItem.value;
+
+        BoxPlayWebSearch.MODALS.EXTRACT_PLAYER_URLS.open();
+
+        let steps = BoxPlayWebSearch.STEPS.EXTRACT_PLAYER_URLS;
+        steps.forEach((step) => step.hide());
+        steps[0].complete();
+
+        BoxPlayWebSocket.request("extract_url", {
+            "source_result": sourceResult,
+            "data_object": dataObject,
+        });
+    }
+
+    static onCancelPlayerUrlSelection(event) {
+        
     }
 
 }

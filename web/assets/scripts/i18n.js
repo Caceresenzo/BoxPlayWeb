@@ -30,18 +30,6 @@ class i18n {
         english.set("settings.actions.clear-search-results", "CLEAR SEARCH RESULTS");
         english.set("result.tabs.informations.label", "INFORMATIONS");
         english.set("result.tabs.content.label", "CONTENT");
-        english.set("initialization-step.please-wait", "please wait");
-        english.set("initialization-step.connect.label", "Connecting");
-        english.set("initialization-step.handshake.label", "Identifying");
-        english.set("initialization-step.retrieve.label", "Getting base data");
-        english.set("generic-step.request.label", "Request");
-        english.set("generic-step.queue.label", "Queue");
-        english.set("generic-step.started.label", "Started");
-        english.set("generic-step.finished.label", "Finished");
-        english.set("get-additional-step.informations.label", "Informations");
-        english.set("get-additional-step.content.label", "Content");
-        english.set("gallery.button.back", "Back");
-
         english.set("result.type.thumbnail", "Thumbnail");
         english.set("result.type.name", "Name");
         english.set("result.type.original_name", "Original Name");
@@ -75,6 +63,17 @@ class i18n {
         english.set("result.type.item_video", "Video");
         english.set("result.type.item_chapter", "Chapter");
         english.set("result.type.null", "Unknown");
+        english.set("initialization-step.please-wait", "please wait");
+        english.set("initialization-step.connect.label", "Connecting");
+        english.set("initialization-step.handshake.label", "Identifying");
+        english.set("initialization-step.retrieve.label", "Getting base data");
+        english.set("generic-step.request.label", "Request");
+        english.set("generic-step.queue.label", "Queue");
+        english.set("generic-step.started.label", "Started");
+        english.set("generic-step.finished.label", "Finished");
+        english.set("get-additional-step.informations.label", "Informations");
+        english.set("get-additional-step.content.label", "Content");
+        english.set("gallery.button.back", "Back");
 
         let french = i18n.registerLanguage("fr", "Français");
         french.set("date.at", "à");
@@ -89,18 +88,6 @@ class i18n {
         french.set("settings.actions.clear-search-results", "VIDER LES RéSULTATS".toUpperCase());
         french.set("result.tabs.informations.label", "INFORMATIONS");
         french.set("result.tabs.content.label", "CONTENU");
-        french.set("initialization-step.please-wait", "veuillez patienter");
-        french.set("initialization-step.connect.label", "Connection");
-        french.set("initialization-step.handshake.label", "Identification");
-        french.set("initialization-step.retrieve.label", "Récupération de données de base");
-        french.set("generic-step.request.label", "Requête");
-        french.set("generic-step.queue.label", "File d'attente");
-        french.set("generic-step.started.label", "Démarré");
-        french.set("generic-step.finished.label", "Terminé");
-        french.set("get-additional-step.informations.label", "Informations");
-        french.set("get-additional-step.content.label", "Contenu");
-        french.set("gallery.button.back", "Retour");
-
         french.set("result.type.thumbnail", "Mignature");
         french.set("result.type.name", "Nom");
         french.set("result.type.original_name", "Nom Original");
@@ -134,6 +121,17 @@ class i18n {
         french.set("result.type.item_video", "Vidéo");
         french.set("result.type.item_chapter", "Chapitre");
         french.set("result.type.null", "Inconnu");
+        french.set("initialization-step.please-wait", "veuillez patienter");
+        french.set("initialization-step.connect.label", "Connection");
+        french.set("initialization-step.handshake.label", "Identification");
+        french.set("initialization-step.retrieve.label", "Récupération de données de base");
+        french.set("generic-step.request.label", "Requête");
+        french.set("generic-step.queue.label", "File d'attente");
+        french.set("generic-step.started.label", "Démarré");
+        french.set("generic-step.finished.label", "Terminé");
+        french.set("get-additional-step.informations.label", "Informations");
+        french.set("get-additional-step.content.label", "Contenu");
+        french.set("gallery.button.back", "Retour");
     }
 
     static prepareSettingsSection() {

@@ -27,6 +27,7 @@ public class Bootstrap {
 		if (Config.WEB_SOCKET_SECURE_ENABLED) {
 			servers.add(new MainWebSocketServer(true));
 		}
+		
 		servers.forEach((server) -> {
 			try {
 				server.start();
