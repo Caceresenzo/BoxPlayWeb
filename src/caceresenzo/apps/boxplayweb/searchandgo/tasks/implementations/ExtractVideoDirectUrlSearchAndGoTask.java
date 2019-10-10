@@ -43,14 +43,30 @@ public class ExtractVideoDirectUrlSearchAndGoTask extends AbstractSearchAndGoTas
 			VideoContentExtractor videoContentExtractor = (VideoContentExtractor) baseVideoContentExtractor;
 			
 			String directUrl = videoContentExtractor.extractDirectVideoUrl(url, new TaskVideoContentExtractorProgressCallback());
-			if (baseVideoContentExtractor.isClientSensitive()) {
-				Response<Void> response = Webb.create()
-						.get(directUrl)
-						.followRedirects(true)
-						.asVoid();
+			
+			switch (baseVideoContentExtractor.getClientSensitivity()) {
+				case ONLY_REDIRECT: {
+					Response<Void> response = Webb.create()
+							.get(directUrl)
+							.chromeUserAgent()
+							.followRedirects(true)
+							.asVoid();
+					
+					if (response.getStatusCode() == 200) {
+						directUrl = response.getConnection().getURL().toString();
+					}
+					
+					break;
+				}
 				
-				if (response.getStatusCode() == 302) {
-					directUrl = response.getHeaderField("Location");
+				case IP_MATCH: {
+					// TODO
+					break;
+				}
+				
+				case NONE:
+				default: {
+					break;
 				}
 			}
 			
