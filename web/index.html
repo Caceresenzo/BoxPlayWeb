@@ -179,8 +179,8 @@
                                                     <a class="col s6 btn-flat disabled">
                                                         <span style="color: black;">{{ additional.value.object.name }}</span>
                                                     </a>
-                                                    <a v-if="additional.value.object.url != undefined && additional.type == 'ITEM_VIDEO'" v-bind:onclick="'BoxPlayWebSearch.onWantToWatch(\'' + result.unique_md5 + '\', ' + index + ')'" class="col s4 offset-s2 waves-effect waves-light btn no-shadow">WATCH</a>
-                                                    <a v-if="additional.value.object.url != undefined && additional.type == 'ITEM_CHAPTER'" v-bind:onclick="'BoxPlayWebSearch.onWantToRead(\'' + result.unique_md5 + '\', ' + index + ')'" class="col s4 offset-s2 waves-effect waves-light btn no-shadow">READ</a>
+                                                    <a v-if="additional.value.object.url != undefined && additional.type == 'ITEM_VIDEO'" v-bind:onclick="'BoxPlayWebSearch.onWantToWatch(\'' + result.unique_md5 + '\', ' + index + ')'" class="translatable col s4 offset-s2 waves-effect waves-light btn no-shadow" data-i18n="result.button.watch">?</a>
+                                                    <a v-if="additional.value.object.url != undefined && additional.type == 'ITEM_CHAPTER'" v-bind:onclick="'BoxPlayWebSearch.onWantToRead(\'' + result.unique_md5 + '\', ' + index + ')'" class="translatable col s4 offset-s2 waves-effect waves-light btn no-shadow" data-i18n="result.button.read">?</a>
                                                 </div>
                                             </ul>
                                         </p>
@@ -198,7 +198,7 @@
                 <div v-else class="col m12 s12 polygon">
                     <ul class="collection with-header">
                         <div class="collection-item row">
-                            <h5>No Content</h5>
+                            <h5 class="translatable" data-i18n="result.empty">?</h5>
                         </div>
                     </ul>
                 </div>
@@ -398,7 +398,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a onclick="BoxPlayWebSearch.onCancelPlayerUrlSelection()" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+                    <a class="translatable modal-close waves-effect waves-green btn-flat" data-i18n="button.close">?</a>
                 </div>
             </div>
             <div id="modal-extract-video-direct-url" class="modal scrollbar">
@@ -463,7 +463,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a onclick="BoxPlayWebSearch.onCancelPlayerUrlSelection()" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+                    <a class="translatable modal-close waves-effect waves-green btn-flat" data-i18n="button.close">?</a>
                 </div>
             </div>
             <div id="modal-video-player" class="modal scrollbar">
@@ -474,7 +474,7 @@
                             <h6 class="center-align">{{ extractedUrls.subtitle }}</h6>
                         </div>
                         <div class="center-align">
-                            <video id="video-player" class="responsive-video video-js" controls preload="none" width="640" height="264" data-setup="{}" style="position: relative; left: 50%; transform: translateX(-50%);">
+                            <video id="video-player" class="responsive-video video-js vjs-big-play-centered" controls preload="none" width="640" height="264" data-setup="{}" style="position: relative; left: 50%; transform: translateX(-50%);">
                                 <p class='vjs-no-js'>
                                     To view this video please enable JavaScript, and consider upgrading to a web browser that
                                     <a href='https://videojs.com/html5-video-support/' target='_blank'>supports HTML5 video</a>
@@ -485,7 +485,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a onclick="BoxPlayWebVideo.onCancelVideoModal()" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+                    <a onclick="BoxPlayWebVideo.onCancelVideoModal()" class="translatable modal-close waves-effect waves-green btn-flat" data-i18n="button.close">?</a>
                 </div>
             </div>
         </div>
@@ -518,11 +518,6 @@
     <script src="assets/scripts/boxplayweb.video.js "></script>
     <script src="assets/scripts/ui.js "></script>
     <script src="assets/scripts/initialize.js "></script>
-
-    <script>
-        let modal = new BoxPlayWebModal("modal-select-player-url ");
-        modal.open();
-    </script>
 </body>
 
 </html>

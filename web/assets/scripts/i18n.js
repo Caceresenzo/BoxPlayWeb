@@ -19,8 +19,9 @@ class i18n {
     static registerHardcodedLanguages() {
         let english = i18n.registerLanguage("en", "English");
         english.set("date.at", "at");
+        english.set("button.close", "Close");
         english.set("warning.header", "Warning");
-        english.set("warning.message.not-complete", "This version is not complete and has a serious lack of feature.");
+        english.set("warning.message.not-complete", "This version is not complete and lack of feature.");
         english.set("search.label", "Search");
         english.set("settings.header", "Settings");
         english.set("settings.providers.header", "Providers");
@@ -28,6 +29,7 @@ class i18n {
         english.set("settings.actions.header", "Actions");
         english.set("settings.actions.clear-server-cache", "CLEAR SERVER CACHE");
         english.set("settings.actions.clear-search-results", "CLEAR SEARCH RESULTS");
+        english.set("result.empty", "Aucun résultat");
         english.set("result.tabs.informations.label", "INFORMATIONS");
         english.set("result.tabs.content.label", "CONTENT");
         english.set("result.type.thumbnail", "Thumbnail");
@@ -63,6 +65,8 @@ class i18n {
         english.set("result.type.item_video", "Video");
         english.set("result.type.item_chapter", "Chapter");
         english.set("result.type.null", "Unknown");
+        english.set("result.button.watch", "Watch");
+        english.set("result.button.read", "Read");
         english.set("initialization-step.please-wait", "please wait");
         english.set("initialization-step.connect.label", "Connecting");
         english.set("initialization-step.handshake.label", "Identifying");
@@ -78,8 +82,9 @@ class i18n {
 
         let french = i18n.registerLanguage("fr", "Français");
         french.set("date.at", "à");
+        french.set("button.close", "Fermer");
         french.set("warning.header", "Attention");
-        french.set("warning.message.not-complete", "Cette version n'est pas complète et a un sérieux manque de fonctionnalité.");
+        french.set("warning.message.not-complete", "Cette version n'est pas complète et manque de fonctionnalité.");
         french.set("search.label", "Recherche");
         french.set("settings.header", "Paramètres");
         french.set("settings.providers.header", "Fournisseurs");
@@ -87,6 +92,7 @@ class i18n {
         french.set("settings.actions.header", "Actions");
         french.set("settings.actions.clear-server-cache", "VIDER LE CACHE DU SERV.");
         french.set("settings.actions.clear-search-results", "VIDER LES RéSULTATS".toUpperCase());
+        french.set("result.empty", "Aucun résultat");
         french.set("result.tabs.informations.label", "INFORMATIONS");
         french.set("result.tabs.content.label", "CONTENU");
         french.set("result.type.thumbnail", "Mignature");
@@ -122,6 +128,8 @@ class i18n {
         french.set("result.type.item_video", "Vidéo");
         french.set("result.type.item_chapter", "Chapitre");
         french.set("result.type.null", "Inconnu");
+        french.set("result.button.watch", "Regarder");
+        french.set("result.button.read", "Lire");
         french.set("initialization-step.please-wait", "veuillez patienter");
         french.set("initialization-step.connect.label", "Connection");
         french.set("initialization-step.handshake.label", "Identification");

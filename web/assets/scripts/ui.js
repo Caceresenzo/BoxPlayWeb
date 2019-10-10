@@ -14,6 +14,11 @@ var mainVue = new Vue({
         },
         enabledProviders: function(val) {
             BoxPlayWebSearch.saveEnabledProvidersToCookies();
+        },
+        results: function(val) {
+            setTimeout(function() {
+                i18n.applyOn(document);
+            }, 100);
         }
     },
     data: {

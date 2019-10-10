@@ -2,11 +2,12 @@ class BoxPlayWebSearch {
 
     static initialize() {
         BoxPlayWebSearch.MODALS = {
-            "SEARCH": new BoxPlayWebModal("modal-search"),
-            "GET_ADDITIONAL": new BoxPlayWebModal("modal-get-additional"),
-            "EXTRACT_PLAYER_URLS": new BoxPlayWebModal("modal-extract-player-urls"),
+            "SEARCH": new BoxPlayWebSteppedModal("modal-search"),
+            "GET_ADDITIONAL": new BoxPlayWebSteppedModal("modal-get-additional"),
+            "EXTRACT_PLAYER_URLS": new BoxPlayWebSteppedModal("modal-extract-player-urls"),
+            "EXTRACT_VIDEO_DIRECT_URL": new BoxPlayWebSteppedModal("modal-extract-video-direct-url"),
+
             "SELECT_PLAYER_URL": new BoxPlayWebModal("modal-select-player-url", true),
-            "EXTRACT_VIDEO_DIRECT_URL": new BoxPlayWebModal("modal-extract-video-direct-url"),
             "SELECT_VIDEO_QUALITY": new BoxPlayWebModal("modal-select-video-quality", true),
         };
 
@@ -18,37 +19,44 @@ class BoxPlayWebSearch {
             "QUERY": document.getElementById("input-search"),
         }
 
+        BoxPlayWebSearch.MODALS.GET_ADDITIONAL.withSteps([
+            new BoxPlayWebModalStep("get-additional-step-request"),
+            new BoxPlayWebModalStep("get-additional-step-queue"),
+            new BoxPlayWebModalStep("get-additional-step-started"),
+            new BoxPlayWebModalStep("get-additional-step-informations"),
+            new BoxPlayWebModalStep("get-additional-step-content"),
+            new BoxPlayWebModalStep("get-additional-step-finished", 1, BoxPlayWebSearch.MODALS.GET_ADDITIONAL),
+        ]);
+
+        BoxPlayWebSearch.MODALS.EXTRACT_PLAYER_URLS
+            .withPrefix("extract-player-urls")
+            .withDefaultSteps()
+            .defaultHandler();
+
+        BoxPlayWebSearch.MODALS.EXTRACT_VIDEO_DIRECT_URL
+            .withPrefix("extract-video-direct-url")
+            .withDefaultSteps()
+            .defaultHandler();
+
         BoxPlayWebSearch.STEPS = {
             "SEARCH": {
                 "HEAD": [
-                    BoxPlayWebSearch.createSearchStep("search-step-request"),
-                    BoxPlayWebSearch.createSearchStep("search-step-queue"),
-                    BoxPlayWebSearch.createSearchStep("search-step-started"),
+                    new BoxPlayWebModalStep("search-step-request"),
+                    new BoxPlayWebModalStep("search-step-queue"),
+                    new BoxPlayWebModalStep("search-step-started"),
                 ],
                 "PROVIDERS": [],
                 "TAIL": [
-                    BoxPlayWebSearch.createSearchStep("search-step-finished", 1, BoxPlayWebSearch.MODALS.SEARCH),
+                    new BoxPlayWebModalStep("search-step-finished", 1, BoxPlayWebSearch.MODALS.SEARCH),
                 ]
             },
             "GET_ADDITIONAL": [
-                BoxPlayWebSearch.createSearchStep("get-additional-step-request"),
-                BoxPlayWebSearch.createSearchStep("get-additional-step-queue"),
-                BoxPlayWebSearch.createSearchStep("get-additional-step-started"),
-                BoxPlayWebSearch.createSearchStep("get-additional-step-informations"),
-                BoxPlayWebSearch.createSearchStep("get-additional-step-content"),
-                BoxPlayWebSearch.createSearchStep("get-additional-step-finished", 1, BoxPlayWebSearch.MODALS.GET_ADDITIONAL),
-            ],
-            "EXTRACT_PLAYER_URLS": [
-                BoxPlayWebSearch.createSearchStep("extract-player-urls-step-request"),
-                BoxPlayWebSearch.createSearchStep("extract-player-urls-step-queue"),
-                BoxPlayWebSearch.createSearchStep("extract-player-urls-step-started"),
-                BoxPlayWebSearch.createSearchStep("extract-player-urls-step-finished", 1, BoxPlayWebSearch.MODALS.EXTRACT_PLAYER_URLS),
-            ],
-            "EXTRACT_VIDEO_DIRECT_URL": [
-                BoxPlayWebSearch.createSearchStep("extract-video-direct-url-step-request"),
-                BoxPlayWebSearch.createSearchStep("extract-video-direct-url-step-queue"),
-                BoxPlayWebSearch.createSearchStep("extract-video-direct-url-step-started"),
-                BoxPlayWebSearch.createSearchStep("extract-video-direct-url-step-finished", 1, BoxPlayWebSearch.MODALS.EXTRACT_VIDEO_DIRECT_URL),
+                new BoxPlayWebModalStep("get-additional-step-request"),
+                new BoxPlayWebModalStep("get-additional-step-queue"),
+                new BoxPlayWebModalStep("get-additional-step-started"),
+                new BoxPlayWebModalStep("get-additional-step-informations"),
+                new BoxPlayWebModalStep("get-additional-step-content"),
+                new BoxPlayWebModalStep("get-additional-step-finished", 1, BoxPlayWebSearch.MODALS.GET_ADDITIONAL),
             ]
         }
 
@@ -63,7 +71,7 @@ class BoxPlayWebSearch {
                 let array = BoxPlayWebSearch.STEPS.SEARCH[from];
 
                 for (let step of array) {
-                    if (id == step.id) {
+                    if (id == step.elementId) {
                         return step;
                     }
                 }
@@ -148,28 +156,16 @@ class BoxPlayWebSearch {
         });
 
         BoxPlayWebSocket.subscribe(["task_progression_notification", "task_enqueued"], function(name, content) {
-            if (!BoxPlayWebSearch.MODALS.GET_ADDITIONAL.isOpen()) {
+            let modal = BoxPlayWebSearch.MODALS.GET_ADDITIONAL;
+
+            if (!modal.isOpen()) {
                 return;
             }
 
-            let findStep = function(id) {
-                let array = BoxPlayWebSearch.STEPS.GET_ADDITIONAL;
-
-                for (let step of array) {
-                    if (id == step.id) {
-                        return step;
-                    }
-                }
-
-                return undefined;
-            }
-
-            let step = undefined;
-            let delay = 0;
             switch (name) {
                 case "task_enqueued":
                     {
-                        step = findStep("get-additional-step-queue");
+                        modal.findStep("get-additional-step-queue").complete();
                         break;
                     }
 
@@ -182,7 +178,7 @@ class BoxPlayWebSearch {
                         switch (progression) {
                             case "START":
                                 {
-                                    step = findStep("get-additional-step-started");
+                                    modal.findStep("get-additional-step-started").complete();
                                     break;
                                 }
 
@@ -193,7 +189,7 @@ class BoxPlayWebSearch {
                                         let eta = message.eta;
 
                                         if (current != null) {
-                                            let localStep = findStep("get-additional-step-" + current.toLowerCase());
+                                            let localStep = modal.findStep("get-additional-step-" + current.toLowerCase());
 
                                             if (localStep != null) {
                                                 let etaMap = {
@@ -211,8 +207,7 @@ class BoxPlayWebSearch {
 
                             case "FINISHED":
                                 {
-                                    step = findStep("get-additional-step-finished");
-                                    delay = 100;
+                                    modal.findStep("get-additional-step-finished").complete(100);
 
                                     setTimeout(function() {
                                         i18n.applyOn(document);
@@ -222,122 +217,6 @@ class BoxPlayWebSearch {
                         }
                         break;
                     }
-            }
-
-            if (step != undefined) {
-                setTimeout(function() {
-                    step.complete();
-                }, delay);
-            }
-        });
-
-        BoxPlayWebSocket.subscribe(["task_progression_notification", "task_enqueued"], function(name, content) {
-            if (!BoxPlayWebSearch.MODALS.EXTRACT_PLAYER_URLS.isOpen()) {
-                return;
-            }
-
-            let findStep = function(id) {
-                let array = BoxPlayWebSearch.STEPS.EXTRACT_PLAYER_URLS;
-
-                for (let step of array) {
-                    if (id == step.id) {
-                        return step;
-                    }
-                }
-
-                return undefined;
-            }
-
-            let step = undefined;
-            let delay = 0;
-            switch (name) {
-                case "task_enqueued":
-                    {
-                        step = findStep("extract-player-urls-step-queue");
-                        break;
-                    }
-
-                case "task_progression_notification":
-                    {
-                        let progression = content.progression;
-
-                        switch (progression) {
-                            case "START":
-                                {
-                                    step = findStep("extract-player-urls-step-started");
-                                    break;
-                                }
-
-                            case "FINISHED":
-                                {
-                                    step = findStep("extract-player-urls-step-finished");
-                                    delay = 100;
-                                    break;
-                                }
-                        }
-                        break;
-                    }
-            }
-
-            if (step != undefined) {
-                setTimeout(function() {
-                    step.complete();
-                }, delay);
-            }
-        });
-
-        BoxPlayWebSocket.subscribe(["task_progression_notification", "task_enqueued"], function(name, content) {
-            if (!BoxPlayWebSearch.MODALS.EXTRACT_VIDEO_DIRECT_URL.isOpen()) {
-                return;
-            }
-
-            let findStep = function(id) {
-                let array = BoxPlayWebSearch.STEPS.EXTRACT_VIDEO_DIRECT_URL;
-
-                for (let step of array) {
-                    if (id == step.id) {
-                        return step;
-                    }
-                }
-
-                return undefined;
-            }
-
-            let step = undefined;
-            let delay = 0;
-            switch (name) {
-                case "task_enqueued":
-                    {
-                        step = findStep("extract-video-direct-url-step-queue");
-                        break;
-                    }
-
-                case "task_progression_notification":
-                    {
-                        let progression = content.progression;
-
-                        switch (progression) {
-                            case "START":
-                                {
-                                    step = findStep("extract-video-direct-url-step-started");
-                                    break;
-                                }
-
-                            case "FINISHED":
-                                {
-                                    step = findStep("extract-video-direct-url-step-finished");
-                                    delay = 100;
-                                    break;
-                                }
-                        }
-                        break;
-                    }
-            }
-
-            if (step != undefined) {
-                setTimeout(function() {
-                    step.complete();
-                }, delay);
             }
         });
     }
@@ -412,54 +291,11 @@ class BoxPlayWebSearch {
 
         for (let provider of mainVue.providers) {
             if (mainVue.enabledProviders.indexOf(provider.manager) != -1) {
-                steps.push(BoxPlayWebSearch.createSearchStep("search-step-provider-" + provider.manager.toLowerCase(), 2));
+                steps.push(new BoxPlayWebModalStep("search-step-provider-" + provider.manager.toLowerCase(), 2));
             }
         }
 
         BoxPlayWebSearch.STEPS.SEARCH.PROVIDERS = steps;
-    }
-
-    static createSearchStep(elementId, elementOffset = 1, modal) {
-        let element = document.getElementById(elementId);
-
-        return {
-            "element": element,
-            "id": elementId,
-            "visible": true,
-            "getCheckmarkElement": function() {
-                return this.element.children[0].children[elementOffset];
-            },
-            "icons": {
-                "current": "sync",
-                "done": "check",
-                "error": "close",
-            },
-            "hide": function() {
-                this.visible = false;
-
-                this.getCheckmarkElement().style.display = "none";
-            },
-            "changeIcon": function(icon) {
-                if (!this.visible) {
-                    this.show();
-                }
-
-                this.getCheckmarkElement().innerText = this.icons[icon];
-            },
-            "show": function() {
-                this.visible = true;
-
-                this.getCheckmarkElement().style.display = "";
-            },
-            "complete": function() {
-                this.changeIcon("done");
-
-                /* Auto-Close if this step is the last */
-                if (modal) {
-                    modal.close();
-                }
-            }
-        }
     }
 
     static onResultOpen(md5) {
@@ -478,10 +314,6 @@ class BoxPlayWebSearch {
         }
 
         BoxPlayWebSearch.MODALS.GET_ADDITIONAL.open();
-
-        let steps = BoxPlayWebSearch.STEPS.GET_ADDITIONAL;
-        steps.forEach((step) => step.hide());
-        steps[0].complete();
 
         BoxPlayWebSocket.request("get_additional", {
             "object": corresponding.object,
@@ -515,12 +347,8 @@ class BoxPlayWebSearch {
 
         mainVue.extractedUrls.title = sourceResult.item.name;
         mainVue.extractedUrls.subtitle = dataObject.object.name;
-        
+
         BoxPlayWebSearch.MODALS.EXTRACT_PLAYER_URLS.open();
-        
-        let steps = BoxPlayWebSearch.STEPS.EXTRACT_PLAYER_URLS;
-        steps.forEach((step) => step.hide());
-        steps[0].complete();
 
         BoxPlayWebSocket.request("extract_url", {
             "source_result": sourceResult,
@@ -531,17 +359,13 @@ class BoxPlayWebSearch {
     static onWantToPlay(playerUrl) {
         BoxPlayWebSearch.MODALS.EXTRACT_VIDEO_DIRECT_URL.open();
 
-        let steps = BoxPlayWebSearch.STEPS.EXTRACT_VIDEO_DIRECT_URL;
-        steps.forEach((step) => step.hide());
-        steps[0].complete();
-
         BoxPlayWebSocket.request("extract_video_direct_url", {
             "url": playerUrl,
         });
     }
 
     static onCancelPlayerUrlSelection(event) {
-        
+
     }
 
 }
