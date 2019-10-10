@@ -1,5 +1,6 @@
 package caceresenzo.apps.boxplayweb;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class Bootstrap {
 		Config.initialize();
 		RequestProcessor.get().initialize();
 		
-		List<WebSocketServer> servers = Arrays.asList(new MainWebSocketServer());
+		List<WebSocketServer> servers = new ArrayList<>(Arrays.asList(new MainWebSocketServer()));
 		if (Config.WEB_SOCKET_SECURE_ENABLED) {
 			servers.add(new MainWebSocketServer(true));
 		}
