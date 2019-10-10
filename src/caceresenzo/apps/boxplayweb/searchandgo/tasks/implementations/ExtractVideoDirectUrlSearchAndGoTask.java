@@ -16,6 +16,7 @@ import caceresenzo.libs.boxplay.common.extractor.video.base.BaseVideoContentExtr
 import caceresenzo.libs.boxplay.common.extractor.video.model.VideoQuality;
 import caceresenzo.libs.http.client.webb.Response;
 import caceresenzo.libs.http.client.webb.Webb;
+import caceresenzo.libs.json.JsonAware;
 
 public class ExtractVideoDirectUrlSearchAndGoTask extends AbstractSearchAndGoTask {
 	
@@ -90,8 +91,15 @@ public class ExtractVideoDirectUrlSearchAndGoTask extends AbstractSearchAndGoTas
 		
 	}
 	
-	private enum Message {
+	private enum Message implements JsonAware {
+		
 		DOWNLOADING_URL, FILE_NOT_AVAILABLE, EXTRACTING_LINK, FORMATTING_RESULT;
+		
+		@Override
+		public String toJsonString() {
+			return "\"" + toString() + "\"";
+		}
+		
 	}
 	
 }
