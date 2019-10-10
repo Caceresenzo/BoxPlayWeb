@@ -1,5 +1,7 @@
 package caceresenzo.apps.boxplayweb.exchange.implementations.responses;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import caceresenzo.apps.boxplayweb.exchange.AbstractResponse;
@@ -25,14 +27,18 @@ public class ProviderListResponse extends AbstractResponse {
 	
 	static {
 		JsonArray jsonArray = new JsonArray();
-		List<SearchAndGoProvider> providers = ProviderManager.createAll();
+		List<SearchAndGoProvider> providers = new ArrayList<>();
+		
+		for (ProviderManager providerManager : Arrays.asList(ProviderManager.JETANIME, ProviderManager.ADKAMI, ProviderManager.ANIMEULTIME, ProviderManager.NEKOSAMA)) {
+			providers.add(providerManager.create());
+		}
 		
 		for (int index = 0; index < providers.size(); index++) {
 			SearchAndGoProvider provider = providers.get(index);
-
+			
 			JsonObject providerJsonObject = new JsonObject();
 			JsonObject siteJsonObject = new JsonObject();
-
+			
 			providerJsonObject.put(JSON_KEY_PROVIDER_ID, index);
 			providerJsonObject.put(JSON_KEY_PROVIDER_CLASS, provider.getClass().getSimpleName());
 			providerJsonObject.put(JSON_KEY_PROVIDER_MANAGER, provider.getSourceManager().toString());
