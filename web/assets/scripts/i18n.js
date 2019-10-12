@@ -79,6 +79,9 @@ class i18n {
         english.set("get-additional-step.content.label", "Content");
         english.set("gallery.button.back", "Back");
         english.set("quality-selector.default", "Default quality");
+        english.set("url.message.extractable", "Extractable");
+        english.set("url.message.extractable-not-compatible", "Extractable, but incompatible");
+        english.set("url.message.not-extractable", "Not extractable");
 
         let french = i18n.registerLanguage("fr", "Français");
         french.set("date.at", "à");
@@ -142,6 +145,9 @@ class i18n {
         french.set("get-additional-step.content.label", "Contenu");
         french.set("gallery.button.back", "Retour");
         french.set("quality-selector.default", "Qualité par defaut");
+        french.set("url.message.extractable", "Extractible");
+        french.set("url.message.extractable-not-compatible", "Extractible, mais incompatible");
+        french.set("url.message.not-extractable", "Not extractible");
     }
 
     static prepareSettingsSection() {

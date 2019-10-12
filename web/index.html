@@ -179,8 +179,10 @@
                                                     <a class="col s6 btn-flat disabled">
                                                         <span style="color: black;">{{ additional.value.object.name }}</span>
                                                     </a>
-                                                    <a v-if="additional.value.object.url != undefined && additional.type == 'ITEM_VIDEO'" v-bind:onclick="'BoxPlayWebSearch.onWantToWatch(\'' + result.unique_md5 + '\', ' + index + ')'" class="translatable col s4 offset-s2 waves-effect waves-light btn no-shadow" data-i18n="result.button.watch">?</a>
-                                                    <a v-if="additional.value.object.url != undefined && additional.type == 'ITEM_CHAPTER'" v-bind:onclick="'BoxPlayWebSearch.onWantToRead(\'' + result.unique_md5 + '\', ' + index + ')'" class="translatable col s4 offset-s2 waves-effect waves-light btn no-shadow" data-i18n="result.button.read">?</a>
+                                                    <a v-if="additional.value.object.url != undefined && additional.type == 'ITEM_VIDEO'" v-bind:onclick="'BoxPlayWebSearch.onWantToWatch(\'' + result.unique_md5 + '\', ' + index + ')'" class="translatable col s4 offset-s2 waves-effect waves-light btn no-shadow"
+                                                        data-i18n="result.button.watch">?</a>
+                                                    <a v-if="additional.value.object.url != undefined && additional.type == 'ITEM_CHAPTER'" v-bind:onclick="'BoxPlayWebSearch.onWantToRead(\'' + result.unique_md5 + '\', ' + index + ')'" class="translatable col s4 offset-s2 waves-effect waves-light btn no-shadow"
+                                                        data-i18n="result.button.read">?</a>
                                                 </div>
                                             </ul>
                                         </p>
@@ -385,11 +387,13 @@
                             <h5 class="center-align">{{ extractedUrls.title }}</h5>
                             <h6 class="center-align">{{ extractedUrls.subtitle }}</h6>
                         </div>
-                        <ul class="collection with-header">
+                        <ul class="collection">
                             <li v-for="(url, index) in extractedUrls.urls" class="collection-item">
                                 <div>
-                                    <a href="#" v-bind:onclick="'BoxPlayWebSearch.onWantToPlay(\'' + extractedUrls.urls[index] + '\')'">{{ url }}</a>
-                                    <a v-bind:href="url" target="_blank" class="secondary-content">
+                                    {{ url.extractor != null ? (url.extractor.client_sensibility == enums.ClientSensibility.IP_MATCH ? translate("url.message.extractable-not-compatible") : translate("url.message.extractable")) : translate("url.message.not-extractable") }}<br>
+                                    <a v-if="url.extractor != null" href="#" v-bind:onclick="'BoxPlayWebSearch.onWantToPlay(\'' + extractedUrls.urls[index].url + '\', ' + (url.extractor.client_sensibility != enums.ClientSensibility.IP_MATCH) + ')'">{{ url.url }}</a>
+                                    <a v-else v-bind:href="url.url" target="_blank">{{ url.url }}</a>
+                                    <a v-bind:href="url.url" target="_blank" class="secondary-content">
                                         <i class="material-icons">open_in_new</i>
                                     </a>
                                 </div>
@@ -488,6 +492,22 @@
                     <a onclick="BoxPlayWebVideo.onCancelVideoModal()" class="translatable modal-close waves-effect waves-green btn-flat" data-i18n="button.close">?</a>
                 </div>
             </div>
+            <div id="modal-iframe-embed" class="modal scrollbar">
+                <div class="modal-content">
+                    <div class="container">
+                        <div>
+                            <h5 class="center-align">{{ extractedUrls.title }}</h5>
+                            <h6 class="center-align">{{ extractedUrls.subtitle }}</h6>
+                        </div>
+                        <div class="center-align">
+                            <iframe id="iframe-embed" width="640" height="264" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a onclick="BoxPlayWebVideo.onCancelIFrameModal()" class="translatable modal-close waves-effect waves-green btn-flat" data-i18n="button.close">?</a>
+                </div>
+            </div>
         </div>
     </div>
     <!-- /.container -->
@@ -505,8 +525,8 @@
     <script src="assets/libraries/materializecss/galleryExpand.js "></script>
 
     <!-- BoxPlay Libraries -->
-    <script src="assets/scripts/constants.js "></script>
     <script src="assets/scripts/utils.js "></script>
+    <script src="assets/scripts/constants.js "></script>
     <script src="assets/scripts/i18n.js "></script>
     <script src="assets/scripts/rating-star.js "></script>
     <script src="assets/scripts/boxplayweb.main.js "></script>

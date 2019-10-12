@@ -356,12 +356,17 @@ class BoxPlayWebSearch {
         });
     }
 
-    static onWantToPlay(playerUrl) {
-        BoxPlayWebSearch.MODALS.EXTRACT_VIDEO_DIRECT_URL.open();
+    static onWantToPlay(playerUrl, extractionCompatible) {
 
-        BoxPlayWebSocket.request("extract_video_direct_url", {
-            "url": playerUrl,
-        });
+        if (extractionCompatible) {
+            BoxPlayWebSearch.MODALS.EXTRACT_VIDEO_DIRECT_URL.open();
+
+            BoxPlayWebSocket.request("extract_video_direct_url", {
+                "url": playerUrl,
+            });
+        } else {
+            BoxPlayWebVideo.iframe(playerUrl);
+        }
     }
 
     static onCancelPlayerUrlSelection(event) {

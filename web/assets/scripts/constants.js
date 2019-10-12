@@ -4,3 +4,5 @@ const WEB_SOCKET_HOST = REMOTE_URL;
 const WEB_SOCKET_PORT = "8134";
 
 const LANGUAGE_DEFAULT = "en";
+
+const ClientSensibility = createEnum(["NONE", "ONLY_REDIRECT", "IP_MATCH"]);

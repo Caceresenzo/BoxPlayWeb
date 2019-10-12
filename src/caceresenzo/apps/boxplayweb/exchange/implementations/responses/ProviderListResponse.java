@@ -43,6 +43,7 @@ public class ProviderListResponse extends AbstractResponse {
 			providerJsonObject.put(JSON_KEY_PROVIDER_CLASS, provider.getClass().getSimpleName());
 			providerJsonObject.put(JSON_KEY_PROVIDER_MANAGER, provider.getSourceManager().toString());
 			providerJsonObject.put(JSON_KEY_PROVIDER_SITE, siteJsonObject);
+			
 			siteJsonObject.put(JSON_KEY_PROVIDER_SITE_URL, provider.getSiteUrl());
 			siteJsonObject.put(JSON_KEY_PROVIDER_SITE_NAME, provider.getSiteName());
 			

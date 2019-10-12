@@ -1,28 +1,46 @@
 class BoxPlayWebVideo {
 
     static initialize() {
-        BoxPlayWebVideo.elementId = "video-player";
+        const videoPlayerElementId = "video-player";
+        const iframeEmbedElementId = "iframe-embed";
 
-        BoxPlayWebVideo.player = document.getElementById(BoxPlayWebVideo.elementId);
-        BoxPlayWebVideo.playerjs = videojs(BoxPlayWebVideo.elementId);
-        BoxPlayWebVideo.modal = new BoxPlayWebModal("modal-video-player");
+        BoxPlayWebVideo.player = document.getElementById(videoPlayerElementId);
+        BoxPlayWebVideo.playerjs = videojs(videoPlayerElementId);
+        BoxPlayWebVideo.iframeEmbed = document.getElementById(iframeEmbedElementId);
+
+        BoxPlayWebVideo.MODALS = {
+            "VIDEO_PLAYER": new BoxPlayWebModal("modal-video-player"),
+            "IFRAME_EMBED": new BoxPlayWebModal("modal-iframe-embed")
+        }
     }
 
     static play(url) {
         if (url == null) {
             BoxPlayWebVideo.playerjs.pause();
             BoxPlayWebVideo.playerjs.reset();
-            BoxPlayWebVideo.modal.close();
+            BoxPlayWebVideo.MODALS.VIDEO_PLAYER.close();
         } else {
             BoxPlayWebVideo.playerjs.src({type: 'video/mp4', src: url});
-            BoxPlayWebVideo.modal.open();
+            BoxPlayWebVideo.MODALS.VIDEO_PLAYER.open();
         }
+    }
 
-        //BoxPlayWebVideo.player.src = url;
+    static iframe(url) {
+        if (url == null) {
+            BoxPlayWebVideo.iframeEmbed.src = "about:blank";
+            BoxPlayWebVideo.MODALS.IFRAME_EMBED.close();
+        } else {
+            BoxPlayWebVideo.iframeEmbed.src = url;
+            BoxPlayWebVideo.MODALS.IFRAME_EMBED.open();
+        }
     }
 
     static onCancelVideoModal() {
         BoxPlayWebVideo.play(null);
+    }
+
+    static onCancelIFrameModal() {
+        BoxPlayWebVideo.iframe(null);
     }
 
 }
