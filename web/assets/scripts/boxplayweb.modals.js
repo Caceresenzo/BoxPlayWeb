@@ -129,11 +129,11 @@ class BoxPlayWebSteppedModal extends BoxPlayWebModal {
         return this.prefix ? (this.prefix + after) : "";
     }
 
-    open() {
+    open(completeFirst = false) {
         if (!this.opened) {
             this.hideAllSteps();
 
-            if (this.steps.length > 0) {
+            if (completeFirst && this.steps.length > 0) {
                 this.steps[0].complete();
             }
         }
