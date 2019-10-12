@@ -119,6 +119,12 @@ class BoxPlayWebSteppedModal extends BoxPlayWebModal {
         return this;
     }
 
+    clearSteps() {
+        this.steps.length = 0;
+
+        return this;
+    }
+
     getSafePrefix(after) {
         return this.prefix ? (this.prefix + after) : "";
     }
@@ -151,7 +157,7 @@ class BoxPlayWebSteppedModal extends BoxPlayWebModal {
         return undefined;
     }
 
-    defaultHandler() {
+    handle(progressHandler = null) {
         let instance = this;
 
         BoxPlayWebSocket.subscribe(["task_progression_notification", "task_enqueued"], function(name, content) {
@@ -168,7 +174,9 @@ class BoxPlayWebSteppedModal extends BoxPlayWebModal {
 
                 case "task_progression_notification":
                     {
+                        let task = content.task;
                         let progression = content.progression;
+                        let message = content.message;
 
                         switch (progression) {
                             case "START":
@@ -176,6 +184,14 @@ class BoxPlayWebSteppedModal extends BoxPlayWebModal {
                                     instance.findStep("step-started").complete();
                                     break;
                                 }
+
+                                case "WORKING":
+                                    {
+                                        if (progressHandler != null) {
+                                            progressHandler(instance, name, content, task, progression, message);
+                                        }
+                                        break;
+                                    }
 
                             case "FINISHED":
                                 {

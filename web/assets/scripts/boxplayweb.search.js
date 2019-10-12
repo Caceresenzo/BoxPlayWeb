@@ -19,206 +19,88 @@ class BoxPlayWebSearch {
             "QUERY": document.getElementById("input-search"),
         }
 
-        BoxPlayWebSearch.MODALS.GET_ADDITIONAL.withSteps([
-            new BoxPlayWebModalStep("get-additional-step-request"),
-            new BoxPlayWebModalStep("get-additional-step-queue"),
-            new BoxPlayWebModalStep("get-additional-step-started"),
-            new BoxPlayWebModalStep("get-additional-step-informations"),
-            new BoxPlayWebModalStep("get-additional-step-content"),
-            new BoxPlayWebModalStep("get-additional-step-finished", 1, BoxPlayWebSearch.MODALS.GET_ADDITIONAL),
-        ]);
+        BoxPlayWebSearch.MODALS.SEARCH
+            .withPrefix("search")
+            .handle(function(modal, name, content, task, progression, message) {
+                if (message != undefined && message.from == "PROVIDER") {
+                    let submessage = message.submessage;
+                    let localStep = modal.findStep("step-provider-" + message.manager.toLowerCase());
+
+                    if (submessage != undefined) {
+                        let error = submessage.error;
+                        let eta = submessage.eta;
+
+                        if (error == undefined) {
+                            switch (eta) {
+                                case "provider.search.finished":
+                                    {
+                                        localStep.changeIcon("done");
+                                        break;
+                                    }
+                                case "provider.search.start":
+                                case "provider.search.sorting":
+                                    {
+                                        localStep.changeIcon("current");
+                                        break;
+                                    }
+                            }
+                        } else {
+                            localStep.changeIcon("error");
+                        }
+                    }
+                }
+            });
+
+        BoxPlayWebSearch.MODALS.SEARCH.createProviderStep = function() {
+            let steps = [];
+
+            for (let provider of mainVue.providers) {
+                if (mainVue.enabledProviders.indexOf(provider.manager) != -1) {
+                    steps.push(new BoxPlayWebModalStep("search-step-provider-" + provider.manager.toLowerCase(), 2));
+                }
+            }
+
+            this.clearSteps().withDefaultSteps(steps);
+        }
+
+        BoxPlayWebSearch.MODALS.GET_ADDITIONAL
+            .withPrefix("get-additional")
+            .withDefaultSteps([
+                new BoxPlayWebModalStep("get-additional-step-informations"),
+                new BoxPlayWebModalStep("get-additional-step-content"),
+            ])
+            .handle(function(modal, name, content, task, progression, message) {
+                if (message != null) {
+                    let current = message.current;
+                    let eta = message.eta;
+
+                    if (current != null) {
+                        let localStep = modal.findStep("step-" + current.toLowerCase());
+
+                        if (localStep != null) {
+                            let etaMap = {
+                                "STARTED": "current",
+                                "FINISHED": "done",
+                                "FAILED": "error",
+                            }
+
+                            localStep.changeIcon(etaMap[eta]);
+                        }
+                    }
+                }
+            });
 
         BoxPlayWebSearch.MODALS.EXTRACT_PLAYER_URLS
             .withPrefix("extract-player-urls")
             .withDefaultSteps()
-            .defaultHandler();
+            .handle();
 
         BoxPlayWebSearch.MODALS.EXTRACT_VIDEO_DIRECT_URL
             .withPrefix("extract-video-direct-url")
             .withDefaultSteps()
-            .defaultHandler();
-
-        BoxPlayWebSearch.STEPS = {
-            "SEARCH": {
-                "HEAD": [
-                    new BoxPlayWebModalStep("search-step-request"),
-                    new BoxPlayWebModalStep("search-step-queue"),
-                    new BoxPlayWebModalStep("search-step-started"),
-                ],
-                "PROVIDERS": [],
-                "TAIL": [
-                    new BoxPlayWebModalStep("search-step-finished", 1, BoxPlayWebSearch.MODALS.SEARCH),
-                ]
-            },
-            "GET_ADDITIONAL": [
-                new BoxPlayWebModalStep("get-additional-step-request"),
-                new BoxPlayWebModalStep("get-additional-step-queue"),
-                new BoxPlayWebModalStep("get-additional-step-started"),
-                new BoxPlayWebModalStep("get-additional-step-informations"),
-                new BoxPlayWebModalStep("get-additional-step-content"),
-                new BoxPlayWebModalStep("get-additional-step-finished", 1, BoxPlayWebSearch.MODALS.GET_ADDITIONAL),
-            ]
-        }
+            .handle();
 
         BoxPlayWebSearch.attachEvent();
-
-        BoxPlayWebSocket.subscribe(["task_progression_notification", "task_enqueued"], function(name, content) {
-            if (!BoxPlayWebSearch.MODALS.SEARCH.isOpen()) {
-                return;
-            }
-
-            let findStep = function(from, id) {
-                let array = BoxPlayWebSearch.STEPS.SEARCH[from];
-
-                for (let step of array) {
-                    if (id == step.elementId) {
-                        return step;
-                    }
-                }
-
-                return undefined;
-            }
-
-            let step = undefined;
-            let delay = 0;
-            switch (name) {
-                case "task_enqueued":
-                    {
-                        step = findStep("HEAD", "search-step-queue");
-                        break;
-                    }
-
-                case "task_progression_notification":
-                    {
-                        let task = content.task;
-                        let progression = content.progression;
-                        let message = content.message;
-
-                        switch (progression) {
-                            case "START":
-                                {
-                                    step = findStep("HEAD", "search-step-started");
-                                    break;
-                                }
-
-                            case "WORKING":
-                                {
-                                    if (message != undefined && message.from == "PROVIDER") {
-                                        let submessage = message.submessage;
-                                        let localStep = findStep("PROVIDERS", "search-step-provider-" + message.manager.toLowerCase());
-
-                                        if (submessage != undefined) {
-                                            let error = submessage.error;
-                                            let eta = submessage.eta;
-
-                                            if (error == undefined) {
-                                                switch (eta) {
-                                                    case "provider.search.finished":
-                                                        {
-                                                            localStep.changeIcon("done");
-                                                            break;
-                                                        }
-                                                    case "provider.search.start":
-                                                    case "provider.search.sorting":
-                                                        {
-                                                            localStep.changeIcon("current");
-                                                            break;
-                                                        }
-                                                }
-                                            } else {
-                                                localStep.changeIcon("error");
-                                            }
-                                        }
-                                    }
-                                    break;
-                                }
-
-                            case "FINISHED":
-                                {
-                                    step = findStep("TAIL", "search-step-finished");
-                                    delay = 100;
-
-                                    setTimeout(function() {
-                                        i18n.applyOn(document);
-                                    }, 300);
-                                    break;
-                                }
-                        }
-                        break;
-                    }
-            }
-
-            if (step != undefined) {
-                setTimeout(function() {
-                    step.complete();
-                }, delay);
-            }
-        });
-
-        BoxPlayWebSocket.subscribe(["task_progression_notification", "task_enqueued"], function(name, content) {
-            let modal = BoxPlayWebSearch.MODALS.GET_ADDITIONAL;
-
-            if (!modal.isOpen()) {
-                return;
-            }
-
-            switch (name) {
-                case "task_enqueued":
-                    {
-                        modal.findStep("get-additional-step-queue").complete();
-                        break;
-                    }
-
-                case "task_progression_notification":
-                    {
-                        let task = content.task;
-                        let progression = content.progression;
-                        let message = content.message;
-
-                        switch (progression) {
-                            case "START":
-                                {
-                                    modal.findStep("get-additional-step-started").complete();
-                                    break;
-                                }
-
-                            case "WORKING":
-                                {
-                                    if (message != null) {
-                                        let current = message.current;
-                                        let eta = message.eta;
-
-                                        if (current != null) {
-                                            let localStep = modal.findStep("get-additional-step-" + current.toLowerCase());
-
-                                            if (localStep != null) {
-                                                let etaMap = {
-                                                    "STARTED": "current",
-                                                    "FINISHED": "done",
-                                                    "FAILED": "error",
-                                                }
-
-                                                localStep.changeIcon(etaMap[eta]);
-                                            }
-                                        }
-                                    }
-                                    break;
-                                }
-
-                            case "FINISHED":
-                                {
-                                    modal.findStep("get-additional-step-finished").complete(100);
-
-                                    setTimeout(function() {
-                                        i18n.applyOn(document);
-                                    }, 300);
-                                    break;
-                                }
-                        }
-                        break;
-                    }
-            }
-        });
     }
 
     static attachEvent() {
@@ -228,6 +110,7 @@ class BoxPlayWebSearch {
             if (event.preventDefault) {
                 event.preventDefault();
             }
+
             BoxPlayWebSearch.doSearch();
             return false;
         }
@@ -266,36 +149,13 @@ class BoxPlayWebSearch {
             return;
         }
 
+        BoxPlayWebSearch.MODALS.SEARCH.createProviderStep();
         BoxPlayWebSearch.MODALS.SEARCH.open();
 
-        BoxPlayWebSearch.createProviderSteps();
-
-        let steps = [];
-        for (let map in BoxPlayWebSearch.STEPS.SEARCH) {
-            for (let step of BoxPlayWebSearch.STEPS.SEARCH[map]) {
-                steps.push(step);
-            }
-        }
-
-        steps.forEach((step) => step.hide());
-
-        steps[0].complete();
         BoxPlayWebSocket.request("search", {
             "query": query,
             "providers": providers,
         });
-    }
-
-    static createProviderSteps() {
-        let steps = [];
-
-        for (let provider of mainVue.providers) {
-            if (mainVue.enabledProviders.indexOf(provider.manager) != -1) {
-                steps.push(new BoxPlayWebModalStep("search-step-provider-" + provider.manager.toLowerCase(), 2));
-            }
-        }
-
-        BoxPlayWebSearch.STEPS.SEARCH.PROVIDERS = steps;
     }
 
     static onResultOpen(md5) {
@@ -367,10 +227,6 @@ class BoxPlayWebSearch {
         } else {
             BoxPlayWebVideo.iframe(playerUrl);
         }
-    }
-
-    static onCancelPlayerUrlSelection(event) {
-
     }
 
 }
