@@ -113,9 +113,13 @@ class BoxPlayWeb {
             BoxPlayWeb.extractedUrls = urls;
             console.log("BoxPlayWeb: Got extracted urls list (" + urls.length + " item(s))");
 
-            setTimeout(function() {
-                BoxPlayWeb.openUrlSelector();
-            }, 100);
+            if (urls.length == 0) {
+                alert(i18n.get("url-selector.error.empty"));
+            } else {
+                setTimeout(function() {
+                    BoxPlayWeb.openUrlSelector()
+                }, 100);
+            }
         });
 
         BoxPlayWebSocket.subscribe(["extracted_video_direct_urls"], function(name, content) {
@@ -124,9 +128,13 @@ class BoxPlayWeb {
             BoxPlayWeb.extractedQualities = qualities;
             console.log("BoxPlayWeb: Got qualities list (" + qualities.length + " item(s))");
 
-            setTimeout(function() {
-                BoxPlayWeb.openQualitySelector();
-            }, 100);
+            if (qualities.length == 0) {
+                alert(i18n.get("quality-selector.error.empty"));
+            } else {
+                setTimeout(function() {
+                    BoxPlayWeb.openQualitySelector();
+                }, 100);
+            }
         });
     }
 

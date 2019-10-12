@@ -79,9 +79,12 @@ class i18n {
         english.set("get-additional-step.content.label", "Content");
         english.set("gallery.button.back", "Back");
         english.set("quality-selector.default", "Default quality");
+        english.set("quality-selector.error.empty", "No quality found.");
+        english.set("url-selector.error.empty", "No link found.");
         english.set("url.message.extractable", "Extractable");
         english.set("url.message.extractable-not-compatible", "Extractable, but incompatible");
         english.set("url.message.not-extractable", "Not extractable");
+        english.set("task.error.url-not-available", "File not available.");
 
         let french = i18n.registerLanguage("fr", "Français");
         french.set("date.at", "à");
@@ -145,9 +148,12 @@ class i18n {
         french.set("get-additional-step.content.label", "Contenu");
         french.set("gallery.button.back", "Retour");
         french.set("quality-selector.default", "Qualité par defaut");
+        french.set("quality-selector.error.empty", "Aucune qualité trouvée.");
+        french.set("url-selector.error.empty", "Aucun lien trouvé.");
         french.set("url.message.extractable", "Extractible");
         french.set("url.message.extractable-not-compatible", "Extractible, mais incompatible");
-        french.set("url.message.not-extractable", "Not extractible");
+        french.set("url.message.not-extractable", "Non extractible");
+        french.set("task.error.url-not-available", "Fichier non disponible.");
     }
 
     static prepareSettingsSection() {

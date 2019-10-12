@@ -21,31 +21,33 @@ class BoxPlayWebSearch {
 
         BoxPlayWebSearch.MODALS.SEARCH
             .withPrefix("search")
-            .handle(function(modal, name, content, task, progression, message) {
-                if (message != undefined && message.from == "PROVIDER") {
-                    let submessage = message.submessage;
-                    let localStep = modal.findStep("step-provider-" + message.manager.toLowerCase());
+            .handle({
+                "WORKING": function(modal, name, content, task, progression, message) {
+                    if (message != undefined && message.from == "PROVIDER") {
+                        let submessage = message.submessage;
+                        let localStep = modal.findStep("step-provider-" + message.manager.toLowerCase());
 
-                    if (submessage != undefined) {
-                        let error = submessage.error;
-                        let eta = submessage.eta;
+                        if (submessage != undefined) {
+                            let error = submessage.error;
+                            let eta = submessage.eta;
 
-                        if (error == undefined) {
-                            switch (eta) {
-                                case "provider.search.finished":
-                                    {
-                                        localStep.changeIcon("done");
-                                        break;
-                                    }
-                                case "provider.search.start":
-                                case "provider.search.sorting":
-                                    {
-                                        localStep.changeIcon("current");
-                                        break;
-                                    }
+                            if (error == undefined) {
+                                switch (eta) {
+                                    case "provider.search.finished":
+                                        {
+                                            localStep.changeIcon("done");
+                                            break;
+                                        }
+                                    case "provider.search.start":
+                                    case "provider.search.sorting":
+                                        {
+                                            localStep.changeIcon("current");
+                                            break;
+                                        }
+                                }
+                            } else {
+                                localStep.changeIcon("error");
                             }
-                        } else {
-                            localStep.changeIcon("error");
                         }
                     }
                 }
@@ -69,22 +71,24 @@ class BoxPlayWebSearch {
                 new BoxPlayWebModalStep("get-additional-step-informations"),
                 new BoxPlayWebModalStep("get-additional-step-content"),
             ])
-            .handle(function(modal, name, content, task, progression, message) {
-                if (message != null) {
-                    let current = message.current;
-                    let eta = message.eta;
+            .handle({
+                "WORKING": function(modal, name, content, task, progression, message) {
+                    if (message != null) {
+                        let current = message.current;
+                        let eta = message.eta;
 
-                    if (current != null) {
-                        let localStep = modal.findStep("step-" + current.toLowerCase());
+                        if (current != null) {
+                            let localStep = modal.findStep("step-" + current.toLowerCase());
 
-                        if (localStep != null) {
-                            let etaMap = {
-                                "STARTED": "current",
-                                "FINISHED": "done",
-                                "FAILED": "error",
+                            if (localStep != null) {
+                                let etaMap = {
+                                    "STARTED": "current",
+                                    "FINISHED": "done",
+                                    "FAILED": "error",
+                                }
+
+                                localStep.changeIcon(etaMap[eta]);
                             }
-
-                            localStep.changeIcon(etaMap[eta]);
                         }
                     }
                 }
@@ -98,7 +102,15 @@ class BoxPlayWebSearch {
         BoxPlayWebSearch.MODALS.EXTRACT_VIDEO_DIRECT_URL
             .withPrefix("extract-video-direct-url")
             .withDefaultSteps()
-            .handle();
+            .handle({
+                "ERROR": function(modal, name, content, task, progression, message) {
+                    if (message == ExtractVideoDirectUrlMessage.FILE_NOT_AVAILABLE) {
+                        modal.close();
+
+                        alert(i18n.get("task.error.url-not-available"));
+                    }
+                }
+            });
 
         BoxPlayWebSearch.attachEvent();
     }
@@ -217,7 +229,6 @@ class BoxPlayWebSearch {
     }
 
     static onWantToPlay(playerUrl, extractionCompatible) {
-
         if (extractionCompatible) {
             BoxPlayWebSearch.MODALS.EXTRACT_VIDEO_DIRECT_URL.open();
 

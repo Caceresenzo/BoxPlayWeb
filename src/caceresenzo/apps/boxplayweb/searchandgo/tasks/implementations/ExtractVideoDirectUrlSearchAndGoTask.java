@@ -60,7 +60,7 @@ public class ExtractVideoDirectUrlSearchAndGoTask extends AbstractSearchAndGoTas
 				}
 				
 				case IP_MATCH: {
-					// TODO
+					/* Impossible: Can't make the (web) client download a remote HTML page */
 					break;
 				}
 				
@@ -70,7 +70,9 @@ public class ExtractVideoDirectUrlSearchAndGoTask extends AbstractSearchAndGoTas
 				}
 			}
 			
-			videoQualities.add(new VideoQuality(null, directUrl));
+			if (directUrl != null) {
+				videoQualities.add(new VideoQuality(null, directUrl));
+			}
 		} else if (baseVideoContentExtractor instanceof VideoQualityContentExtractor) {
 			VideoQualityContentExtractor videoQualityContentExtractor = (VideoQualityContentExtractor) baseVideoContentExtractor;
 			

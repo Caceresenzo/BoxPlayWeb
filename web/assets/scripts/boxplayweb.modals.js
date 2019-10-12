@@ -129,7 +129,7 @@ class BoxPlayWebSteppedModal extends BoxPlayWebModal {
         return this.prefix ? (this.prefix + after) : "";
     }
 
-    open(completeFirst = false) {
+    open(completeFirst = true) {
         if (!this.opened) {
             this.hideAllSteps();
 
@@ -157,8 +157,12 @@ class BoxPlayWebSteppedModal extends BoxPlayWebModal {
         return undefined;
     }
 
-    handle(progressHandler = null) {
+    handle(handlers) {
         let instance = this;
+
+        if (!handlers) {
+            handlers = {};
+        }
 
         BoxPlayWebSocket.subscribe(["task_progression_notification", "task_enqueued"], function(name, content) {
             if (!instance.isOpen()) {
@@ -179,23 +183,35 @@ class BoxPlayWebSteppedModal extends BoxPlayWebModal {
                         let message = content.message;
 
                         switch (progression) {
-                            case "START":
+                            case TaskProgression.START:
                                 {
                                     instance.findStep("step-started").complete();
                                     break;
                                 }
 
-                                case "WORKING":
-                                    {
-                                        if (progressHandler != null) {
-                                            progressHandler(instance, name, content, task, progression, message);
-                                        }
-                                        break;
-                                    }
+                            case TaskProgression.WORKING:
+                                {
+                                    let handler = handlers[TaskProgression.WORKING];
 
-                            case "FINISHED":
+                                    if (handler != null) {
+                                        handler(instance, name, content, task, progression, message);
+                                    }
+                                    break;
+                                }
+
+                            case TaskProgression.FINISHED:
                                 {
                                     instance.findStep("step-finished").complete(100);
+                                    break;
+                                }
+
+                            case TaskProgression.ERROR:
+                                {
+                                    let handler = handlers[TaskProgression.ERROR];
+
+                                    if (handler != null) {
+                                        handler(instance, name, content, task, progression, message);
+                                    }
                                     break;
                                 }
                         }
@@ -207,7 +223,5 @@ class BoxPlayWebSteppedModal extends BoxPlayWebModal {
 
         return this;
     }
-
-
 
 }

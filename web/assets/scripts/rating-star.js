@@ -6,6 +6,7 @@ class RatingStar {
                 element.classList.add(clazz);
             }
         }
+
         let average = container.dataset.average;
         let best = container.dataset.best;
         let votes = container.dataset.votes;
@@ -19,10 +20,12 @@ class RatingStar {
             starElements.push(document.createElement("span"));
             starElements[index].style.padding = "2px";
         }
+
         starElements.forEach((element) => addClasses(element, ["fa", "fa-star"]));
         for (let index = 0; index < average; index++) {
             starElements[index].classList.add("checked-star");
         }
+        
         addClasses(container, ["row", "center-align"]);
         starElements.forEach((element) => container.appendChild(element));
         container.appendChild(document.createElement("br"));

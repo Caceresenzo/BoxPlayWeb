@@ -6,4 +6,5 @@ const WEB_SOCKET_PORT = "8134";
 const LANGUAGE_DEFAULT = "en";
 
 const ClientSensibility = createEnum(["NONE", "ONLY_REDIRECT", "IP_MATCH"]);
+const TaskProgression = createEnum(["WAITING", "START", "WORKING", "FINISHED", "ERROR"]);
 const ExtractVideoDirectUrlMessage = createEnum(["DOWNLOADING_URL", "FILE_NOT_AVAILABLE", "EXTRACTING_LINK", "FORMATTING_RESULT"]);

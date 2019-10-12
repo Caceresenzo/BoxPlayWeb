@@ -37,32 +37,8 @@ var mainVue = new Vue({
         extractedUrls: {
             title: "",
             subtitle: "",
-            urls: [/*
-                {
-                    url: "https://gounlimited.to/embed-9x5xwp0muhs4.html",
-                    extractor: null,
-                },
-                {
-                    url: "https://www.freshstream.kiwi/embed/8r0Z7NklLjVOLR4",
-                    extractor: {
-                        class: "GenericVeryStreamVideoExtractor",
-                        client_sensibility: "IP_MATCH"
-                    },
-                },
-                {
-                    url: "https://www.freshstream.kiwi/embed/8r0Z7NklLjVOLR4",
-                    extractor: {
-                        class: "GenericVeryStreamVideoExtractor",
-                        client_sensibility: "pother"
-                    },
-                }*/
-            ],
-            qualities: [
-                {
-                    "resolution": "600x455",
-                    "url": "https://lh3.googleusercontent.com/Fj_re2WtewANSZyQ6aS06jzs8_jRAu6ldhZRanAvTXuGiAOlC6YbvpldQhekT9UxHaQpcWIxF7Bg8AntMQMZ2VHKFVm8lxL1iZ1afu5H6JCT2f4C7qGp6oAShTY2KRGJVmBVpIf10A=w600-h315-k-no-m37?Signature=2cad2f543c5d59f6bcec48f5e4f18d7b&Expires=1570739796&AccessKeyId=AAMF48SDFZ8987IOPH"
-                }
-            ]
+            urls: [],
+            qualities: []
         }
     }
 });
